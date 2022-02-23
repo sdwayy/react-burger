@@ -1,0 +1,60 @@
+.container {
+  flex-basis: 50%;
+  display: flex;
+  flex-direction: column;
+}
+
+.tabs {
+  display: flex;
+}
+
+.tabs > div {
+  flex-grow: 1;
+}
+
+.list {
+  list-style: none;
+}
+
+.ingredients-list {
+  max-height: 45%;
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+  overflow-y: scroll;
+}
+
+.ingredients-list::-webkit-scrollbar {
+  width: var(--scrollbar-width);
+}
+
+.ingredients-list::-webkit-scrollbar-track {
+  margin-bottom: var(--scrollbar-margin-bottom);
+  background-color: var(--scrollbar-track-color);
+}
+
+.ingredients-list::-webkit-scrollbar-thumb {
+  background-color:  var(--scrollbar-thumb-color);
+}
+
+.ingredients-card-list {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;  
+}
+
+.ingredients-card {
+  position: relative;
+  width: 272px;
+  min-height: 208px;
+  margin-bottom: 32px;
+  text-align: center;
+  cursor: pointer;
+}
+
+.price {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
