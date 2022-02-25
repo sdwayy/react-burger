@@ -1,9 +1,12 @@
 :root {
   --main-font-color: #F2F2F3;
+
   --scrollbar-thumb-color: #8585AD;
   --scrollbar-track-color: #2F2F37;
   --scrollbar-width: 8px;
   --scrollbar-margin-bottom: 50px;
+
+  --max-content-width: 1260px;
 }
 
 * {
@@ -33,9 +36,10 @@ body > div:first-of-type {
   display: flex;
   flex-grow: 1;
   flex-direction: column;
-  padding: 40px 17.7%;
+  max-width: var(--max-content-width);
+  margin: 0 auto;
+  padding-left: 20px;
 }
-
 
 .content-container {
   display: flex;

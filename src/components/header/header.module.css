@@ -1,11 +1,14 @@
 .header {
+  color: var(--main-font-color);
+  background-color: hsl(240, 8%, 12%);
+}
+
+.container {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding-right: 16.7%;
-  padding-left: 16.7%;
-  background-color: hsl(240, 8%, 12%);
-  color: var(--main-font-color);
+  max-width: var(--max-content-width);
+  margin: auto;
 }
 
 .header ul {

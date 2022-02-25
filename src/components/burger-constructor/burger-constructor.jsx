@@ -110,8 +110,8 @@ const BurgerConstructor = props => {
 };
 
 BurgerConstructor.propTypes = {
-  burger: burgerPropTypes,
-  removeFilling: PropTypes.func,
+  burger: burgerPropTypes.isRequired,
+  removeFilling: PropTypes.func.isRequired,
 };
 
 export default BurgerConstructor;
