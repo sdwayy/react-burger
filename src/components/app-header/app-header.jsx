@@ -1,5 +1,5 @@
 import React from 'react';
-import styles from './header.module.css';
+import styles from './app-header.module.css';
 
 import {
   BurgerIcon,
@@ -7,6 +7,12 @@ import {
   ListIcon,
   ProfileIcon,
 } from '@ya.praktikum/react-developer-burger-ui-components';
+
+const text = {
+  constructor: 'Конструктор',
+  orderFeed: 'Лента заказов',
+  profile: 'Личный кабинет',
+};
 
 const Header = () => (
   <header className={`pt-3 pb-3 ${styles.header}`}>
@@ -19,7 +25,7 @@ const Header = () => (
               href="/"
             >
               <BurgerIcon type="primary" />
-              <span className="ml-2">Конструктор</span>
+              <span className="ml-2">{text.constructor}</span>
             </a>
           </li>
           <li>
@@ -28,7 +34,7 @@ const Header = () => (
               href="/"
             >
               <ListIcon type="secondary" />
-              <span className="ml-2">Лента заказов</span>
+              <span className="ml-2">{text.orderFeed}</span>
             </a>
           </li>
         </ul>
@@ -39,7 +45,7 @@ const Header = () => (
         href="/"
       >
         <ProfileIcon type="secondary" />
-        <span className="ml-2">Личный кабинет</span>
+        <span className="ml-2">{text.profile}</span>
       </a>
     </div>
   </header>

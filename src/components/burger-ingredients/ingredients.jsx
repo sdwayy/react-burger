@@ -4,16 +4,16 @@ import styles from './burger-ingredients.module.css';
 
 import IngredientCardContent from './ingredient-card-content';
 
-import { burgerPropTypes, ingredientListPropTypes } from '../../utils/propTypes';
+import { orderPropTypes, ingredientListPropTypes } from '../../utils/propTypes';
 
 const Ingredients = props => {
   const {
-    burger,
+    order,
     itemsData,
     onIngredientClick,
   } = props;
 
-  const { bun, filling } = burger;
+  const { bun, filling } = order;
 
   const getCountInBurger = (type, _id) => {
     if (type === 'bun') {
@@ -50,7 +50,7 @@ const Ingredients = props => {
 };
 
 Ingredients.propTypes = {
-  burger: burgerPropTypes.isRequired,
+  order: orderPropTypes.isRequired,
   itemsData: ingredientListPropTypes.isRequired,
   onIngredientClick: PropTypes.func.isRequired,
 };

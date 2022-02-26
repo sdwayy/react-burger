@@ -1,28 +1,46 @@
 import React from 'react';
 import styles from './app.module.css'
 
-import Header from '../header/header';
+import Header from '../app-header/app-header';
 import BurgerIngredients from '../burger-ingredients/burger-ingredients';
 import BurgerConstructor from '../burger-constructor/burger-constructor';
 
-import mockData from '../../utils/data' 
+const URL = 'https://norma.nomoreparties.space/api/ingredients';
+
+const text = {
+  errorMessage: 'В приложении произошла ошибка. Пожалуйста, перезагрузите страницу',
+  errorTitle: 'Что-то пошло не так :(',
+  appTitle: 'Соберите бургер',
+};
+
+const defaultOrderValue = {
+  bun: {},
+  filling: [],
+};
 
 const App = () => {
   const [data, setData] = React.useState([]);
-  const [burger, setBurger] = React.useState({ bun: {}, filling: [], });
+  const [order, setOrder] = React.useState(defaultOrderValue);
 
-  const { filling } = burger;
+  const [error, setError] = React.useState(null);
+  const [loading, setLoading] = React.useState(true);
 
-  const setBun = newBun => setBurger({ ...burger, bun: newBun });
+  const { filling } = order;
 
-  const addFilling = addedFilling => setBurger({
-    ...burger,
+  const createNewOrder = () => {
+    setOrder({ ...defaultOrderValue })
+  };
+
+  const setBun = newBun => setOrder({ ...order, bun: newBun });
+
+  const addFilling = addedFilling => setOrder({
+    ...order,
     filling: [...filling, addedFilling],
   });
 
   const removeFilling = index => {
-    setBurger({
-      ...burger,
+    setOrder({
+      ...order,
       filling: [...filling.slice(0, index), ...filling.slice(index + 1)],
     });
 
@@ -30,20 +48,53 @@ const App = () => {
   };
 
   React.useEffect(() => {
-    setData(mockData)
+    fetch(URL)
+      .then(response => {
+        return response.json();
+      })
+      .then(response => {
+        setData(response.data);
+        setLoading(false);
+      })
+      .catch(() => {
+        setLoading(false);
+        setError(true);
+      });
   }, []);
 
   return (
     <>
       <Header />
       <main className={`${styles.main}`}>
-        <h1 className="text text_type_main-large pt-10 pb-5">
-          Соберите бургер
-        </h1>
-        <div className={styles['content-container']}>
-          <BurgerIngredients burger={burger} ingredients={data} addFilling={addFilling} setBun={setBun} />
-          <BurgerConstructor burger={burger} removeFilling={removeFilling} />
-        </div>
+        <>
+          <h1 className="text text_type_main-large pt-10 pb-5">
+            { error ? text.errorTitle : text.appTitle}
+          </h1>
+          {
+            error
+              ? (
+                <p className="text text_type_main-medium">{text.errorMessage}</p>
+              )
+              : (
+                !loading
+                && (
+                  <div className={styles['content-container']}>
+                    <BurgerIngredients
+                      order={order}
+                      ingredients={data}
+                      addFilling={addFilling}
+                      setBun={setBun}
+                    />
+                    <BurgerConstructor
+                      order={order}
+                      removeFilling={removeFilling}
+                      createNewOrder={createNewOrder}
+                    />
+                  </div>
+                )
+              )
+          }
+        </>
       </main>
     </>
   );

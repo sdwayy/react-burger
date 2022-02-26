@@ -8,18 +8,65 @@ import {
 } from '@ya.praktikum/react-developer-burger-ui-components';
 
 import OrderItemContent from './order-item-content';
+import Modal from '../modal/modal';
 
-import { burgerPropTypes } from '../../utils/propTypes';
+import { orderPropTypes } from '../../utils/propTypes';
+import OrderDetails from '../order-details/order-details';
+
+import orderData from '../../utils/orderData';
+
+const text = {
+  up: 'верх',
+  down: 'низ',
+  createOrder: 'Оформить заказ',
+  orderCreationErrorMessage: 'Что-то пошло не так :( Попробуйте еще раз.',
+};
 
 const BurgerConstructor = props => {
   const {
-    burger,
+    order,
     removeFilling,
+    createNewOrder,
   } = props;
 
-  const { bun, filling } = burger;
-  
+  const [orderModalIsVisible, setOrderModalVisibility] = React.useState(null);
+  const [orderId, setOrderId] = React.useState(null);
+  const [orderCreationError, setOrderCreationError] = React.useState(null);
+
+  const { bun, filling } = order;
+
   const bunIsExist = Object.keys(bun).length > 0;
+
+  const closeModal = () => {
+    setOrderModalVisibility(false);
+
+    if (orderId) {
+      setOrderId(null);
+    }
+  };
+
+  const openModal = () => {
+    setOrderModalVisibility(true);
+  };
+
+  const createOrder = () => new Promise(resolve => {
+    setTimeout(() => {
+      resolve(orderData);
+    }, 1000)
+  });
+
+  const onCreateOrderBtnClick = () => {
+    createOrder()
+      .then(response => {
+        setOrderId(response.id);
+        openModal();
+        createNewOrder();
+      })
+      .catch(() => {
+        setOrderCreationError(true);
+        openModal();
+      });
+  };
 
   const getOrderSum = () => {
     if (!bunIsExist && !filling.length) {
@@ -51,7 +98,7 @@ const BurgerConstructor = props => {
     const handleClose = () => removeFilling(index);
 
     return (
-      <li key={index} className={styles['order-item']}>
+      <li key={index} className={`${styles['order-item']} mb-4`}>
         <OrderItemContent
           text={name}
           price={price}
@@ -68,13 +115,13 @@ const BurgerConstructor = props => {
       {
         bunIsExist
         && (
-          <div className={`${styles['order-item']} pl-8 pr-4`}>
+          <div className={`${styles['order-item']} mb-4 pl-8 pr-4`}>
             <OrderItemContent
               type="top"
               isLocked={true}
-              text={`${bun.name}\n(верх)`} 
+              text={`${bun.name}\n(${text.up})`}
               price={bun.price}
-              thumbnail={bun.image_mobile} 
+              thumbnail={bun.image_mobile}
             />
           </div>
         )
@@ -85,11 +132,11 @@ const BurgerConstructor = props => {
       {
         bunIsExist
         && (
-          <div className={`${styles['order-item']} mb-10 pl-8 pr-4`}>
+          <div className={`${styles['order-item']} mt-4 mb-10 pl-8 pr-4`}>
             <OrderItemContent
               type="bottom"
               isLocked={true}
-              text={`${bun.name}\n(низ)`} 
+              text={`${bun.name}\n(${text.down})`}
               price={bun.price}
               thumbnail={bun.image_mobile} 
             />
@@ -101,17 +148,35 @@ const BurgerConstructor = props => {
           <span className="text text_type_digits-medium mr-2">{orderSum}</span>
           <CurrencyIcon type="primary" />
         </p>
-        <Button type="primary" size="large" disabled={orderSum === 0}>
-          Оформить заказ
+        <Button
+          type="primary"
+          size="large"
+          disabled={orderSum === 0}
+          onClick={onCreateOrderBtnClick}
+        >
+          {text.createOrder}
         </Button>
       </footer>
+      {
+        orderModalIsVisible
+        && (
+          <Modal closeModal={closeModal} className={styles['order-modal']}>
+            {
+              orderCreationError
+                ? <p className="text text_type_main-default">{text.orderCreationErrorMessage}</p>
+                : <OrderDetails id={orderId} />
+            }
+          </Modal>
+        )
+      }
     </section>
   );
 };
 
 BurgerConstructor.propTypes = {
-  burger: burgerPropTypes.isRequired,
+  order: orderPropTypes.isRequired,
   removeFilling: PropTypes.func.isRequired,
+  createNewOrder: PropTypes.func.isRequired,
 };
 
 export default BurgerConstructor;

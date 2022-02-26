@@ -1,0 +1,13 @@
+.nutritional-value {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  margin: 0;
+  padding: 0 60px;
+  list-style: none;
+}
+
+.nutritional-value li {
+  min-width: 112px;
+  text-align: center;
+}
