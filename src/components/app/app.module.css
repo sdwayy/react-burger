@@ -20,6 +20,7 @@ body {
 }
 
 body {
+  position: relative;
   display: flex;
   flex-direction: column;
   max-height: 100vh;
@@ -34,7 +35,7 @@ body > div:first-of-type {
 
 .main {
   display: flex;
-  flex-grow: 1;
+  width: 100%;
   flex-direction: column;
   max-width: var(--max-content-width);
   margin: 0 auto;
