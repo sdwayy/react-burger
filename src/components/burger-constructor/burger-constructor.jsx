@@ -13,7 +13,7 @@ import Modal from '../modal/modal';
 import { orderPropTypes } from '../../utils/propTypes';
 import OrderDetails from '../order-details/order-details';
 
-import orderData from '../../utils/orderData';
+import orderData from '../../mocks/orderData';
 
 const text = {
   up: 'верх',
@@ -59,11 +59,12 @@ const BurgerConstructor = props => {
     createOrder()
       .then(response => {
         setOrderId(response.id);
-        openModal();
         createNewOrder();
       })
       .catch(() => {
         setOrderCreationError(true);
+      })
+      .finally(() => {
         openModal();
       });
   };

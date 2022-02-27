@@ -60,6 +60,12 @@ const BurgerIngredients = props => {
     onIngredientClick(fillingData);
   };
 
+  const getIngredientItemsDataByType = type => ingredients.filter(i => i.type === type);
+
+  const bunItemsData = React.useMemo(() => getIngredientItemsDataByType('bun'), [ingredients]);
+  const sauceItemsData =  React.useMemo(() => getIngredientItemsDataByType('sauce'), [ingredients]);
+  const fillingItemsData = React.useMemo(() => getIngredientItemsDataByType('main'), [ingredients]);
+
   return (
     <section className={styles.container}>
       <div className={`${styles.tabs} mb-10`}>
@@ -78,7 +84,7 @@ const BurgerIngredients = props => {
           <h2 className="text text_type_main-medium mb-6">{text.firstIngredientCategory}</h2>
           <Ingredients
             order={order}
-            itemsData={ingredients.filter(i => i.type === 'bun')}
+            itemsData={bunItemsData}
             onIngredientClick={onBunIngredientClick}
           />
         </li>
@@ -86,7 +92,7 @@ const BurgerIngredients = props => {
           <h2 className="text text_type_main-medium mb-6">{text.secondIngredientCategory}</h2>
           <Ingredients
             order={order}
-            itemsData={ingredients.filter(i => i.type === 'sauce')}
+            itemsData={sauceItemsData}
             onIngredientClick={onSauceIngredientClick}
           />
         </li>
@@ -94,7 +100,7 @@ const BurgerIngredients = props => {
           <h2 className="text text_type_main-medium mb-6">{text.thirdIngredientCategory}</h2>
           <Ingredients
             order={order}
-            itemsData={ingredients.filter(i => i.type === 'main')}
+            itemsData={fillingItemsData}
             onIngredientClick={onFillingIngredientClick}
           />
         </li>

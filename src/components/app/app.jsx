@@ -28,7 +28,7 @@ const App = () => {
   const { filling } = order;
 
   const createNewOrder = () => {
-    setOrder({ ...defaultOrderValue })
+    setOrder(defaultOrderValue)
   };
 
   const setBun = newBun => setOrder({ ...order, bun: newBun });
@@ -54,11 +54,12 @@ const App = () => {
       })
       .then(response => {
         setData(response.data);
-        setLoading(false);
       })
       .catch(() => {
-        setLoading(false);
         setError(true);
+      })
+      .finally(() => {
+        setLoading(false);
       });
   }, []);
 
