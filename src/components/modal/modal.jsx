@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { createPortal } from 'react-dom';
 import styles from './modal.module.css';
 
@@ -52,6 +53,16 @@ const Modal = ({
       <ModalOverlay closeModal={closeModal} />
     </>
   ), modalRoot);
+};
+
+Modal.propTypes = {
+  title: PropTypes.string,
+  children: PropTypes.oneOfType([
+    PropTypes.arrayOf(PropTypes.node),
+    PropTypes.node,
+  ]).isRequired,
+  closeModal: PropTypes.func.isRequired,
+  className: PropTypes.string,
 };
 
 export default Modal;

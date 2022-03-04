@@ -7,22 +7,18 @@ import {
   DragIcon,
 } from '@ya.praktikum/react-developer-burger-ui-components';
 
-const OrderItemContent = props => {
-  const {
-    dragable,
-    ...constructorElementProps
-  } = props;
-
-  return (
-    <>
-      {
-        dragable
-        && <span className={`${styles['drag-icon']} mr-2`}><DragIcon type="primary" /></span>
-      }
-      <ConstructorElement { ...constructorElementProps }/>
-    </>
-  );
-};
+const OrderItemContent = ({
+  dragable,
+  ...constructorElementProps
+}) => (
+  <>
+    {
+      dragable
+      && <span className={`${styles['drag-icon']} mr-2`}><DragIcon type="primary" /></span>
+    }
+    <ConstructorElement { ...constructorElementProps }/>
+  </>
+);
 
 OrderItemContent.propTypes = {
   dragable: PropTypes.bool,

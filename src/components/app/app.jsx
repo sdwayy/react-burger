@@ -9,9 +9,8 @@ import Header from '../app-header/app-header';
 import BurgerIngredients from '../burger-ingredients/burger-ingredients';
 import BurgerConstructor from '../burger-constructor/burger-constructor';
 
-import { orderContext } from '../../services/orderContext';
-
-const INGREDIENTS_URL = 'https://norma.nomoreparties.space/api/ingredients';
+import { OrderContext } from '../../services/order-context';
+import { INGREDIENTS_URL } from '../../constants';
 
 const text = {
   errorMessage: 'В приложении произошла ошибка. Пожалуйста, перезагрузите страницу',
@@ -27,9 +26,8 @@ const initialOrderState = {
 
 const getOrderPrice = (currentBun, currentFilling) => {
   const bunPrice = currentBun ? currentBun.price * 2 : 0;
-  const fillingPrice = currentFilling.reduce((acc, i) =>  acc + i.price, 0);
 
-  return bunPrice + fillingPrice;
+  return currentFilling.reduce((acc, { price }) =>  acc + price, bunPrice);
 };
 
 const orderReducer = (state, { type, payload }) => {
@@ -100,7 +98,6 @@ const App = () => {
   return (
     <>
       <Header />
-      <orderContext.Provider value={{ orderState, orderDispatcher }}>
         <main className={`${styles.main}`}>
           <>
             <h1 className="text text_type_main-large pt-10 pb-5">
@@ -113,15 +110,16 @@ const App = () => {
                   !loading
                   && (
                     <div className={styles['content-container']}>
-                      <BurgerIngredients ingredients={data} />
-                      <BurgerConstructor />
+                      <OrderContext.Provider value={{ orderState, orderDispatcher }}>
+                        <BurgerIngredients ingredients={data} />
+                        <BurgerConstructor />
+                      </OrderContext.Provider>
                     </div>
                   )
                 )
             }
           </>
         </main>
-      </orderContext.Provider>
     </>
   );
 }

@@ -14,9 +14,8 @@ import Modal from '../modal/modal';
 
 import OrderDetails from '../order-details/order-details';
 
-import { orderContext } from '../../services/orderContext';
-
-const ORDERS_URL = 'https://norma.nomoreparties.space/api/orders';
+import { OrderContext } from '../../services/order-context';
+import { ORDERS_URL } from '../../constants';
 
 const text = {
   up: 'верх',
@@ -30,7 +29,7 @@ const BurgerConstructor = () => {
   const [orderId, setOrderId] = useState(null);
   const [orderCreationError, setOrderCreationError] = useState(null);
 
-  const { orderState, orderDispatcher } = useContext(orderContext)
+  const { orderState, orderDispatcher } = useContext(OrderContext)
   const { bun, filling, price } = orderState;
 
   const closeModal = () => {
@@ -48,7 +47,7 @@ const BurgerConstructor = () => {
   const fetchOrder = () => {
     const ingredientIds = [
       bun._id,
-      ...filling.map(i => i._id),
+      ...filling.map(({ _id }) => _id),
     ];
 
     const body = JSON.stringify({
@@ -91,12 +90,12 @@ const BurgerConstructor = () => {
       });
   };
 
-  const fillingElements = filling.map((i, index) => {
+  const fillingElements = filling.map((fillingItem, index) => {
     const {
       name,
       price,
       image_mobile,
-    } = i;
+    } = fillingItem;
 
     const handleClose = () => orderDispatcher({
       type: 'removeFilling',

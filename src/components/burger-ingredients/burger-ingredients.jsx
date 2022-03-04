@@ -13,9 +13,9 @@ import Ingredients from './ingredients';
 import Modal from '../modal/modal';
 import IngredientDetails from '../ingredient-details/ingredient-details';
 
-import { orderContext } from '../../services/orderContext';
+import { OrderContext } from '../../services/order-context';
 
-import { ingredientListPropTypes } from '../../utils/propTypes';
+import { ingredientListPropTypes } from '../../utils/prop-types';
 
 const text = {
   firstIngredientCategory: 'Булки',
@@ -25,7 +25,7 @@ const text = {
 };
 
 const BurgerIngredients = ({ ingredients }) => {
-  const { orderDispatcher } = useContext(orderContext);
+  const { orderDispatcher } = useContext(OrderContext);
 
   const [currentTab, setCurrurentTab] = useState('buns')
   const [ingrediebtDetailsModalIsVisible, setIngrediebtDetailsModalVisibility] = useState(null);
@@ -69,7 +69,9 @@ const BurgerIngredients = ({ ingredients }) => {
     onIngredientClick(fillingData);
   };
 
-  const getIngredientItemsDataByType = type => ingredients.filter(i => i.type === type);
+  const getIngredientItemsDataByType = requiredType => ingredients.filter(
+    ({ type }) => type === requiredType,
+  );
 
   const bunItemsData = useMemo(() => getIngredientItemsDataByType('bun'), [ingredients]);
   const sauceItemsData =  useMemo(() => getIngredientItemsDataByType('sauce'), [ingredients]);

@@ -4,15 +4,15 @@ import styles from './burger-ingredients.module.css';
 
 import IngredientCardContent from './ingredient-card-content';
 
-import { orderContext } from '../../services/orderContext';
+import { OrderContext } from '../../services/order-context';
 
-import { ingredientListPropTypes } from '../../utils/propTypes';
+import { ingredientListPropTypes } from '../../utils/prop-types';
 
 const Ingredients = ({
   itemsData,
   onIngredientClick,
 }) => {
-  const { orderState } = useContext(orderContext);
+  const { orderState } = useContext(OrderContext);
   const { bun, filling } = orderState;
 
   const getCountInBurger = (type, _id) => {
