@@ -1,5 +1,7 @@
-import React from 'react';
-import PropTypes from 'prop-types';
+import React, {
+  useContext,
+  useState,
+} from 'react';
 import styles from './burger-constructor.module.css';
 
 import {
@@ -10,10 +12,10 @@ import {
 import OrderItemContent from './order-item-content';
 import Modal from '../modal/modal';
 
-import { orderPropTypes } from '../../utils/propTypes';
 import OrderDetails from '../order-details/order-details';
 
-import orderData from '../../mocks/orderData';
+import { OrderContext } from '../../services/order-context';
+import { ORDERS_URL } from '../../constants';
 
 const text = {
   up: 'верх',
@@ -22,20 +24,13 @@ const text = {
   orderCreationErrorMessage: 'Что-то пошло не так :( Попробуйте еще раз.',
 };
 
-const BurgerConstructor = props => {
-  const {
-    order,
-    removeFilling,
-    createNewOrder,
-  } = props;
+const BurgerConstructor = () => {
+  const [orderModalIsVisible, setOrderModalVisibility] = useState(null);
+  const [orderId, setOrderId] = useState(null);
+  const [orderCreationError, setOrderCreationError] = useState(null);
 
-  const [orderModalIsVisible, setOrderModalVisibility] = React.useState(null);
-  const [orderId, setOrderId] = React.useState(null);
-  const [orderCreationError, setOrderCreationError] = React.useState(null);
-
-  const { bun, filling } = order;
-
-  const bunIsExist = Object.keys(bun).length > 0;
+  const { orderState, orderDispatcher } = useContext(OrderContext)
+  const { bun, filling, price } = orderState;
 
   const closeModal = () => {
     setOrderModalVisibility(false);
@@ -49,19 +44,45 @@ const BurgerConstructor = props => {
     setOrderModalVisibility(true);
   };
 
-  const createOrder = () => new Promise(resolve => {
-    setTimeout(() => {
-      resolve(orderData);
-    }, 1000)
-  });
+  const fetchOrder = () => {
+    const ingredientIds = [
+      bun._id,
+      ...filling.map(({ _id }) => _id),
+    ];
+
+    const body = JSON.stringify({
+      ingredients: ingredientIds,
+    })
+
+    const data = {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body,
+    };
+
+    return fetch(ORDERS_URL, data)
+      .then(response => response.json());
+  };
 
   const onCreateOrderBtnClick = () => {
-    createOrder()
+    fetchOrder()
       .then(response => {
-        setOrderId(response.id);
-        createNewOrder();
+        const {
+          success,
+          order,
+        } = response;
+
+        if (!success) {
+          setOrderCreationError(true);
+          return null;
+        }
+
+        setOrderId(order.number);
+        orderDispatcher({ type: 'resetOrder' });
       })
-      .catch(() => {
+      .catch((e) => {
         setOrderCreationError(true);
       })
       .finally(() => {
@@ -69,34 +90,17 @@ const BurgerConstructor = props => {
       });
   };
 
-  const getOrderSum = () => {
-    if (!bunIsExist && !filling.length) {
-      return 0;
-    }
-
-    if (!filling.length) {
-      return bun.price * 2;
-    }
-
-    const getFillingPrice = () => filling.reduce((acc, i) => acc + i.price, 0);
-
-    if (!bunIsExist) {
-      return getFillingPrice();
-    }
-
-    return bun.price * 2 + getFillingPrice();
-  };
-
-  const orderSum = getOrderSum();
-
-  const fillingElements = filling.map((i, index) => {
+  const fillingElements = filling.map((fillingItem, index) => {
     const {
       name,
       price,
       image_mobile,
-    } = i;
+    } = fillingItem;
 
-    const handleClose = () => removeFilling(index);
+    const handleClose = () => orderDispatcher({
+      type: 'removeFilling',
+      payload: { index },
+    });
 
     return (
       <li key={index} className={`${styles['order-item']} mb-4`}>
@@ -114,7 +118,7 @@ const BurgerConstructor = props => {
   return (
     <section className={`${styles.container} pl-4`}>
       {
-        bunIsExist
+        bun
         && (
           <div className={`${styles['order-item']} mb-4 pl-8 pr-4`}>
             <OrderItemContent
@@ -131,9 +135,9 @@ const BurgerConstructor = props => {
         {fillingElements}
       </ul>
       {
-        bunIsExist
+        bun
         && (
-          <div className={`${styles['order-item']} mt-4 mb-10 pl-8 pr-4`}>
+          <div className={`${styles['order-item']} mt-4 pl-8 pr-4`}>
             <OrderItemContent
               type="bottom"
               isLocked={true}
@@ -144,15 +148,15 @@ const BurgerConstructor = props => {
           </div>
         )
       }
-      <footer className="pr-4">
+      <footer className="pr-4 mt-10">
         <p className={`${styles.sum} mr-10`}>
-          <span className="text text_type_digits-medium mr-2">{orderSum}</span>
+          <span className="text text_type_digits-medium mr-2">{price}</span>
           <CurrencyIcon type="primary" />
         </p>
         <Button
           type="primary"
           size="large"
-          disabled={orderSum === 0}
+          disabled={price === 0 || !bun}
           onClick={onCreateOrderBtnClick}
         >
           {text.createOrder}
@@ -172,12 +176,6 @@ const BurgerConstructor = props => {
       }
     </section>
   );
-};
-
-BurgerConstructor.propTypes = {
-  order: orderPropTypes.isRequired,
-  removeFilling: PropTypes.func.isRequired,
-  createNewOrder: PropTypes.func.isRequired,
 };
 
 export default BurgerConstructor;

@@ -1,5 +1,8 @@
-import React from 'react';
-import PropTypes from 'prop-types';
+import React, {
+  useState,
+  useMemo,
+  useContext,
+} from 'react';
 import styles from './burger-ingredients.module.css';
 
 import {
@@ -10,7 +13,9 @@ import Ingredients from './ingredients';
 import Modal from '../modal/modal';
 import IngredientDetails from '../ingredient-details/ingredient-details';
 
-import { orderPropTypes, ingredientListPropTypes } from '../../utils/propTypes';
+import { OrderContext } from '../../services/order-context';
+
+import { ingredientListPropTypes } from '../../utils/prop-types';
 
 const text = {
   firstIngredientCategory: 'Булки',
@@ -19,17 +24,12 @@ const text = {
   ingredientDetails: 'Детали ингредиента',
 };
 
-const BurgerIngredients = props => {
-  const {
-    order,
-    ingredients,
-    setBun,
-    addFilling,
-  } = props;
+const BurgerIngredients = ({ ingredients }) => {
+  const { orderDispatcher } = useContext(OrderContext);
 
-  const [currentTab, setCurrurentTab] = React.useState('buns')
-  const [ingrediebtDetailsModalIsVisible, setIngrediebtDetailsModalVisibility] = React.useState(null);
-  const [activeIngredient, setActiveIngredient] = React.useState(null);
+  const [currentTab, setCurrurentTab] = useState('buns')
+  const [ingrediebtDetailsModalIsVisible, setIngrediebtDetailsModalVisibility] = useState(null);
+  const [activeIngredient, setActiveIngredient] = useState(null);
 
   const openIngrediebtDetailsModal = () => {
     setIngrediebtDetailsModalVisibility(true);
@@ -46,25 +46,36 @@ const BurgerIngredients = props => {
   };
 
   const onBunIngredientClick = bunData => {
-    setBun(bunData);
+    orderDispatcher({
+      type: 'setBun',
+      payload: {  bun: bunData },
+    });
     onIngredientClick(bunData);
   };
 
   const onSauceIngredientClick = sauceData => {
-    addFilling(sauceData);
+    orderDispatcher({
+      type: 'addFilling',
+      payload: {  filling: sauceData },
+    });
     onIngredientClick(sauceData);
   };
 
   const onFillingIngredientClick = fillingData => {
-    addFilling(fillingData);
+    orderDispatcher({
+      type: 'addFilling',
+      payload: {  filling: fillingData },
+    });
     onIngredientClick(fillingData);
   };
 
-  const getIngredientItemsDataByType = type => ingredients.filter(i => i.type === type);
+  const getIngredientItemsDataByType = requiredType => ingredients.filter(
+    ({ type }) => type === requiredType,
+  );
 
-  const bunItemsData = React.useMemo(() => getIngredientItemsDataByType('bun'), [ingredients]);
-  const sauceItemsData =  React.useMemo(() => getIngredientItemsDataByType('sauce'), [ingredients]);
-  const fillingItemsData = React.useMemo(() => getIngredientItemsDataByType('main'), [ingredients]);
+  const bunItemsData = useMemo(() => getIngredientItemsDataByType('bun'), [ingredients]);
+  const sauceItemsData =  useMemo(() => getIngredientItemsDataByType('sauce'), [ingredients]);
+  const fillingItemsData = useMemo(() => getIngredientItemsDataByType('main'), [ingredients]);
 
   return (
     <section className={styles.container}>
@@ -83,7 +94,6 @@ const BurgerIngredients = props => {
         <li className="mb-10">
           <h2 className="text text_type_main-medium mb-6">{text.firstIngredientCategory}</h2>
           <Ingredients
-            order={order}
             itemsData={bunItemsData}
             onIngredientClick={onBunIngredientClick}
           />
@@ -91,7 +101,6 @@ const BurgerIngredients = props => {
         <li className="mb-10">
           <h2 className="text text_type_main-medium mb-6">{text.secondIngredientCategory}</h2>
           <Ingredients
-            order={order}
             itemsData={sauceItemsData}
             onIngredientClick={onSauceIngredientClick}
           />
@@ -99,7 +108,6 @@ const BurgerIngredients = props => {
         <li className="mb-10">
           <h2 className="text text_type_main-medium mb-6">{text.thirdIngredientCategory}</h2>
           <Ingredients
-            order={order}
             itemsData={fillingItemsData}
             onIngredientClick={onFillingIngredientClick}
           />
@@ -122,10 +130,7 @@ const BurgerIngredients = props => {
 };
 
 BurgerIngredients.propTypes = {
-  order: orderPropTypes.isRequired,
   ingredients: ingredientListPropTypes.isRequired,
-  setBun: PropTypes.func.isRequired,
-  addFilling: PropTypes.func.isRequired,
 };
 
 export default BurgerIngredients;
