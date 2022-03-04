@@ -1,23 +1,23 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import PropTypes from 'prop-types';
 import styles from './burger-ingredients.module.css';
 
 import IngredientCardContent from './ingredient-card-content';
 
-import { orderPropTypes, ingredientListPropTypes } from '../../utils/propTypes';
+import { orderContext } from '../../services/orderContext';
 
-const Ingredients = props => {
-  const {
-    order,
-    itemsData,
-    onIngredientClick,
-  } = props;
+import { ingredientListPropTypes } from '../../utils/propTypes';
 
-  const { bun, filling } = order;
+const Ingredients = ({
+  itemsData,
+  onIngredientClick,
+}) => {
+  const { orderState } = useContext(orderContext);
+  const { bun, filling } = orderState;
 
   const getCountInBurger = (type, _id) => {
     if (type === 'bun') {
-      return bun && bun._id === _id ? 1 : 0;
+      return bun?._id === _id ? 1 : 0;
     }
 
     const count = filling.length > 0 
@@ -31,15 +31,22 @@ const Ingredients = props => {
     <ul className={`${styles.list} ${styles['ingredients-card-list']} pl-4 pr-4`}>
       {
         itemsData.map(itemData => {
-          const { image, name, price, _id } = itemData;
+          const {
+            image,
+            name,
+            price,
+            _id,
+            type,
+          } = itemData;
+          const uniqKey = `${_id}-${+new Date()}`
 
           return (
-            <li className={styles['ingredients-card']} key={_id} onClick={() => onIngredientClick(itemData)}>
+            <li className={styles['ingredients-card']} key={uniqKey} onClick={() => onIngredientClick(itemData)}>
               <IngredientCardContent
                 src={image}
                 title={name}
                 price={price}
-                count={getCountInBurger(itemData.type, itemData._id)}
+                count={getCountInBurger(type, _id)}
               />
             </li>
           );
@@ -50,7 +57,6 @@ const Ingredients = props => {
 };
 
 Ingredients.propTypes = {
-  order: orderPropTypes.isRequired,
   itemsData: ingredientListPropTypes.isRequired,
   onIngredientClick: PropTypes.func.isRequired,
 };

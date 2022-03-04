@@ -1,5 +1,5 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
+import { createPortal } from 'react-dom';
 import styles from './modal.module.css';
 
 import {
@@ -9,14 +9,12 @@ import ModalOverlay from '../modal-overlay/modal-overlay';
 
 const modalRoot = document.getElementById("react-modals");
 
-const Modal = props => {
-  const {
-    title,
-    children,
-    closeModal,
-    className,
-  } = props;
-
+const Modal = ({
+  title,
+  children,
+  closeModal,
+  className,
+}) => {
   const onDocumentKeydown = event => {
     const { key } = event;
 
@@ -38,7 +36,7 @@ const Modal = props => {
     };
   }, []);
 
-  return ReactDOM.createPortal((
+  return createPortal((
     <>
       <div className={`${styles.modal} pl-10 pr-10 pt-10 pb-15 ${className}`}>
         <header>

@@ -10,11 +10,7 @@ const text = {
   carbohydrates: 'Углводы, г',
 };
 
-const IngredientDetails = props => {
-  const {
-    ingredientData,
-  } = props;
-
+const IngredientDetails = ({ ingredientData }) => {
   const {
     calories,
     carbohydrates,

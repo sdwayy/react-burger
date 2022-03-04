@@ -7,32 +7,28 @@ import {
   Counter,
 } from '@ya.praktikum/react-developer-burger-ui-components';
 
-const IngredientCardContent = props => {
-  const {
-    src,
-    title,
-    price,
-    count,
-  } = props;
-
-  return (
-    <>
-      <img src={src} alt={title} />
-      <p className={`${styles.price} text text_type_digits-default mb-1 mt-1`}>
-        <span className="mr-2">{price}</span>
-        <CurrencyIcon type='primary' />
-      </p>
-      <p className="text text_type_main-default">{title}</p>
-      {
-        count > 0 && (
-          <span className={styles.counter}>
-            <Counter count={count} size="default" />
-          </span>
-        )
-      }
-    </>
-  );
-};
+const IngredientCardContent = ({
+  src,
+  title,
+  price,
+  count,
+}) => (
+  <>
+    <img src={src} alt={title} />
+    <p className={`${styles.price} text text_type_digits-default mb-1 mt-1`}>
+      <span className="mr-2">{price}</span>
+      <CurrencyIcon type='primary' />
+    </p>
+    <p className="text text_type_main-default">{title}</p>
+    {
+      count > 0 && (
+        <span className={styles.counter}>
+          <Counter count={count} size="default" />
+        </span>
+      )
+    }
+  </>
+);
 
 IngredientCardContent.propTypes = {
   src: PropTypes.string.isRequired,
