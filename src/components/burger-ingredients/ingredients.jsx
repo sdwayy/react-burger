@@ -1,60 +1,24 @@
-import React, { useContext } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
+
 import styles from './burger-ingredients.module.css';
 
-import IngredientCardContent from './ingredient-card-content';
-
-import { OrderContext } from '../../services/order-context';
-
+import Ingredient from './ingredient';
 import { ingredientListPropTypes } from '../../utils/prop-types';
 
-const Ingredients = ({
-  itemsData,
-  onIngredientClick,
-}) => {
-  const { orderState } = useContext(OrderContext);
-  const { bun, filling } = orderState;
-
-  const getCountInBurger = (type, _id) => {
-    if (type === 'bun') {
-      return bun?._id === _id ? 1 : 0;
+const Ingredients = ({ itemsData, onIngredientClick }) => (
+  <ul className={`${styles.list} ${styles['ingredients-card-list']} pl-4 pr-4`}>
+    {
+      itemsData.map(itemData => (
+        <Ingredient
+          data={itemData}
+          onIngredientClick={onIngredientClick}
+          key={itemData._id}
+        />
+      ))
     }
-
-    const count = filling.length > 0 
-      ? filling.reduce((acc, i) => i._id === _id ? acc + 1 : acc, 0)
-      : 0;
-
-    return count;
-  };
-
-  return (
-    <ul className={`${styles.list} ${styles['ingredients-card-list']} pl-4 pr-4`}>
-      {
-        itemsData.map(itemData => {
-          const {
-            image,
-            name,
-            price,
-            _id,
-            type,
-          } = itemData;
-          const uniqKey = `${_id}-${+new Date()}`
-
-          return (
-            <li className={styles['ingredients-card']} key={uniqKey} onClick={() => onIngredientClick(itemData)}>
-              <IngredientCardContent
-                src={image}
-                title={name}
-                price={price}
-                count={getCountInBurger(type, _id)}
-              />
-            </li>
-          );
-        })
-      }
-    </ul>
-  );
-};
+  </ul>
+);
 
 Ingredients.propTypes = {
   itemsData: ingredientListPropTypes.isRequired,

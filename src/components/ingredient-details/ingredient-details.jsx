@@ -1,7 +1,6 @@
 import React from "react";
+import { useSelector } from "react-redux";
 import styles from './ingredient-details.module.css';
-
-import { ingredientPropTypes } from '../../utils/prop-types';
 
 const text = {
   calories: 'Калории, ккал',
@@ -10,15 +9,17 @@ const text = {
   carbohydrates: 'Углводы, г',
 };
 
-const IngredientDetails = ({ ingredientData }) => {
+const IngredientDetails = () => {
+  const activeIngredient = useSelector(state => state.activeIngredient);
+
   const {
     calories,
-    carbohydrates,
-    fat,
+    proteins,
     image_large,
     name,
-    proteins,
-  } = ingredientData;
+    carbohydrates,
+    fat,
+  } = activeIngredient;
 
   return (
     <>
@@ -56,10 +57,6 @@ const IngredientDetails = ({ ingredientData }) => {
       </ul>
     </>
   );
-};
-
-IngredientDetails.propTypes = {
-  ingredientData: ingredientPropTypes.isRequired,
 };
 
 export default IngredientDetails;
