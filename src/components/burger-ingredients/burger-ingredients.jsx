@@ -60,36 +60,18 @@ const BurgerIngredients = () => {
 
     const observerOptions = {
       root: ingredientListContainerElement,
-      rootMargin: '0px',
-      threshold: [0.3, 0.5, 1],
+      rootMargin: '-5% 0px -90% 0px',
     };
 
     const observer = new IntersectionObserver(entries => {
-      let targetEntrie = entries[0];
+      entries.forEach(({ isIntersecting, target }) => {
+        const targetCategory = target?.dataset.ingredientCategory;
 
-      if (entries.length > 0) {
-        const sortedEntries = [...entries].sort((a, b) => a.intersectionRatio + b.intersectionRatio);
-        targetEntrie = sortedEntries[0];
-      } 
-
-      const {
-        intersectionRatio,
-        intersectionRect,
-        rootBounds,
-        target,
-      } = targetEntrie;
-
-      const targetCategory = target?.dataset.ingredientCategory;
-
-      if (!targetCategory || targetCategory === prevTab) return;
-
-      const { height: rootHeight } = rootBounds;
-      const { height: intersectionRectHeight } = intersectionRect;
-
-      if (intersectionRectHeight > rootHeight * 0.7 || intersectionRatio === 1) {
-        prevTab.current = targetCategory;
-        setCurrurentTab(targetCategory);
-      }
+        if (isIntersecting && targetCategory !== prevTab.current) {
+          prevTab.current = targetCategory;
+          setCurrurentTab(targetCategory);
+        }
+      })
     }, observerOptions);
 
     [...ingredientListContainerElement.children].forEach(child => {
