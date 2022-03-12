@@ -17,7 +17,7 @@
 }
 
 .ingredients-list {
-  max-height: 45%;
+  max-height: 70vh;
   margin: 0;
   padding: 0;
   overflow-x: hidden;
@@ -50,7 +50,7 @@
   min-height: 208px;
   margin-bottom: 32px;
   text-align: center;
-  cursor: pointer;
+  cursor: move;
 }
 
 .price {

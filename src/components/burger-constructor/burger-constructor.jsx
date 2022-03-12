@@ -1,7 +1,10 @@
-import React, {
-  useContext,
-  useState,
-} from 'react';
+import React, { useMemo } from 'react';
+import {
+  useDispatch,
+  useSelector,
+} from 'react-redux';
+import { useDrop } from 'react-dnd';
+
 import styles from './burger-constructor.module.css';
 
 import {
@@ -9,13 +12,20 @@ import {
   CurrencyIcon,
 } from '@ya.praktikum/react-developer-burger-ui-components';
 
-import OrderItemContent from './order-item-content';
+import IngredientCardContent from './ingredient-card-content';
 import Modal from '../modal/modal';
-
 import OrderDetails from '../order-details/order-details';
+import BurgerFillingCard from './burger-filling-card';
 
-import { OrderContext } from '../../services/order-context';
-import { ORDERS_URL } from '../../constants';
+import {
+  fetchOrder,
+  setBun,
+  addFilling,
+  removeFilling,
+  moveFilling,
+  toggleError,
+} from '../../services/store/slices/currentOrder';
+import { setCreatedOrder } from '../../services/store/slices/createdOrder';
 
 const text = {
   up: 'верх',
@@ -25,103 +35,55 @@ const text = {
 };
 
 const BurgerConstructor = () => {
-  const [orderModalIsVisible, setOrderModalVisibility] = useState(null);
-  const [orderId, setOrderId] = useState(null);
-  const [orderCreationError, setOrderCreationError] = useState(null);
+  const dispatch = useDispatch();
+  const { currentOrder, ingredients, createdOrder } = useSelector(state => state);
+  const { bun, filling, hasError } = currentOrder;
 
-  const { orderState, orderDispatcher } = useContext(OrderContext)
-  const { bun, filling, price } = orderState;
+  const orderPrice = useMemo(() => {
+    const bunPrice = bun ? bun.price * 2 : 0;
+
+    return filling.reduce((acc, { price }) =>  acc + price, bunPrice);
+  }, [bun, filling]);
+
+  const [, dropRef] = useDrop({
+    accept: 'ingredient',
+    drop({ id }) {
+      const itemData = ingredients.list.find(({ _id }) =>  _id === id);
+
+      if (itemData.type === 'bun') {
+        dispatch(setBun(itemData));
+      } else {
+        dispatch(addFilling(itemData));
+      }
+    },
+  });
 
   const closeModal = () => {
-    setOrderModalVisibility(false);
-
-    if (orderId) {
-      setOrderId(null);
+    if (hasError) {
+      dispatch(toggleError());
     }
-  };
-
-  const openModal = () => {
-    setOrderModalVisibility(true);
-  };
-
-  const fetchOrder = () => {
-    const ingredientIds = [
-      bun._id,
-      ...filling.map(({ _id }) => _id),
-    ];
-
-    const body = JSON.stringify({
-      ingredients: ingredientIds,
-    })
-
-    const data = {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body,
-    };
-
-    return fetch(ORDERS_URL, data)
-      .then(response => response.json());
+    dispatch(setCreatedOrder(null));
   };
 
   const onCreateOrderBtnClick = () => {
-    fetchOrder()
-      .then(response => {
-        const {
-          success,
-          order,
-        } = response;
-
-        if (!success) {
-          setOrderCreationError(true);
-          return null;
-        }
-
-        setOrderId(order.number);
-        orderDispatcher({ type: 'resetOrder' });
-      })
-      .catch((e) => {
-        setOrderCreationError(true);
-      })
-      .finally(() => {
-        openModal();
-      });
+    dispatch(fetchOrder(currentOrder));
   };
 
-  const fillingElements = filling.map((fillingItem, index) => {
-    const {
-      name,
-      price,
-      image_mobile,
-    } = fillingItem;
+  const handleRemoveFillingItem = itemData => {
+    dispatch(removeFilling(itemData));
+  };
 
-    const handleClose = () => orderDispatcher({
-      type: 'removeFilling',
-      payload: { index },
-    });
-
-    return (
-      <li key={index} className={`${styles['order-item']} mb-4`}>
-        <OrderItemContent
-          text={name}
-          price={price}
-          thumbnail={image_mobile}
-          handleClose={handleClose}
-          dragable={true}
-        />
-      </li>
-    )
-  });
+  const handleMoveFillingItem = (currentIndex, newIndex) => {
+    dispatch(moveFilling({currentIndex, newIndex}));
+  };
 
   return (
-    <section className={`${styles.container} pl-4`}>
+    <section className={`${styles.container} pl-4`} ref={dropRef}>
       {
         bun
         && (
           <div className={`${styles['order-item']} mb-4 pl-8 pr-4`}>
-            <OrderItemContent
+            <IngredientCardContent
               type="top"
               isLocked={true}
               text={`${bun.name}\n(${text.up})`}
@@ -132,13 +94,23 @@ const BurgerConstructor = () => {
         )
       }
       <ul className={`${styles['filling-list']} pr-2`}>
-        {fillingElements}
+        {
+          filling.map((itemData, index) => (
+            <BurgerFillingCard
+              data={itemData}
+              handleRemove={handleRemoveFillingItem}
+              handleMove={handleMoveFillingItem}
+              key={itemData.key}
+              index={index}
+            />
+          ))
+        }
       </ul>
       {
         bun
         && (
           <div className={`${styles['order-item']} mt-4 pl-8 pr-4`}>
-            <OrderItemContent
+            <IngredientCardContent
               type="bottom"
               isLocked={true}
               text={`${bun.name}\n(${text.down})`}
@@ -150,26 +122,26 @@ const BurgerConstructor = () => {
       }
       <footer className="pr-4 mt-10">
         <p className={`${styles.sum} mr-10`}>
-          <span className="text text_type_digits-medium mr-2">{price}</span>
+          <span className="text text_type_digits-medium mr-2">{orderPrice}</span>
           <CurrencyIcon type="primary" />
         </p>
         <Button
           type="primary"
           size="large"
-          disabled={price === 0 || !bun}
+          disabled={orderPrice === 0 || !bun}
           onClick={onCreateOrderBtnClick}
         >
           {text.createOrder}
         </Button>
       </footer>
       {
-        orderModalIsVisible
+        (createdOrder || hasError)
         && (
           <Modal closeModal={closeModal} className={styles['order-modal']}>
             {
-              orderCreationError
+              hasError
                 ? <p className="text text_type_main-default">{text.orderCreationErrorMessage}</p>
-                : <OrderDetails id={orderId} />
+                : <OrderDetails />
             }
           </Modal>
         )

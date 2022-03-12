@@ -7,7 +7,7 @@ import {
   DragIcon,
 } from '@ya.praktikum/react-developer-burger-ui-components';
 
-const OrderItemContent = ({
+const IngredientCardContent = ({
   dragable,
   ...constructorElementProps
 }) => (
@@ -20,7 +20,7 @@ const OrderItemContent = ({
   </>
 );
 
-OrderItemContent.propTypes = {
+IngredientCardContent.propTypes = {
   dragable: PropTypes.bool,
   type: PropTypes.oneOf(['top', 'bottom']),
   isLocked: PropTypes.bool,
@@ -30,4 +30,4 @@ OrderItemContent.propTypes = {
   price: PropTypes.number.isRequired,
 };
 
-export default OrderItemContent;
+export default IngredientCardContent;

@@ -1,136 +1,160 @@
 import React, {
   useState,
   useMemo,
-  useContext,
+  useCallback,
+  useEffect,
+  useRef,
 } from 'react';
+import {
+  useDispatch,
+  useSelector,
+} from 'react-redux';
+
 import styles from './burger-ingredients.module.css';
 
 import {
   Tab,
 } from '@ya.praktikum/react-developer-burger-ui-components';
-
 import Ingredients from './ingredients';
 import Modal from '../modal/modal';
 import IngredientDetails from '../ingredient-details/ingredient-details';
 
-import { OrderContext } from '../../services/order-context';
+import { setActiveIngredient } from '../../services/store/slices/activeIngredient';
 
-import { ingredientListPropTypes } from '../../utils/prop-types';
-
+const categories = ['bun', 'sauce', 'main'];
 const text = {
-  firstIngredientCategory: 'Булки',
-  secondIngredientCategory: 'Соусы',
-  thirdIngredientCategory: 'Начинки',
+  ingredientCategories: {
+    bun: 'Булки',
+    sauce: 'Соусы',
+    main: 'Начинки',
+  },
   ingredientDetails: 'Детали ингредиента',
 };
 
-const BurgerIngredients = ({ ingredients }) => {
-  const { orderDispatcher } = useContext(OrderContext);
+const BurgerIngredients = () => {
+  const dispatch = useDispatch();
+  const { list: ingredients } = useSelector(state => state.ingredients);
 
-  const [currentTab, setCurrurentTab] = useState('buns')
-  const [ingrediebtDetailsModalIsVisible, setIngrediebtDetailsModalVisibility] = useState(null);
-  const [activeIngredient, setActiveIngredient] = useState(null);
+  const itemsDataByCategory = useMemo(
+    () => ingredients.reduce((acc, item) => {
+      const { type } = item;
 
-  const openIngrediebtDetailsModal = () => {
-    setIngrediebtDetailsModalVisibility(true);
-  };
+      if (!acc[type]) {
+        acc[type] = [];
+      }
 
-  const closeIngrediebtDetailsModal = () => {
-    setIngrediebtDetailsModalVisibility(false);
-    setActiveIngredient(null);
-  };
+      acc[type].push(item);
 
-  const onIngredientClick = ingredientData => {
-    setActiveIngredient(ingredientData);
-    openIngrediebtDetailsModal();
-  };
-
-  const onBunIngredientClick = bunData => {
-    orderDispatcher({
-      type: 'setBun',
-      payload: {  bun: bunData },
-    });
-    onIngredientClick(bunData);
-  };
-
-  const onSauceIngredientClick = sauceData => {
-    orderDispatcher({
-      type: 'addFilling',
-      payload: {  filling: sauceData },
-    });
-    onIngredientClick(sauceData);
-  };
-
-  const onFillingIngredientClick = fillingData => {
-    orderDispatcher({
-      type: 'addFilling',
-      payload: {  filling: fillingData },
-    });
-    onIngredientClick(fillingData);
-  };
-
-  const getIngredientItemsDataByType = requiredType => ingredients.filter(
-    ({ type }) => type === requiredType,
+      return acc;
+    }, {}),
+    [ingredients],
   );
 
-  const bunItemsData = useMemo(() => getIngredientItemsDataByType('bun'), [ingredients]);
-  const sauceItemsData =  useMemo(() => getIngredientItemsDataByType('sauce'), [ingredients]);
-  const fillingItemsData = useMemo(() => getIngredientItemsDataByType('main'), [ingredients]);
+  const prevTab = useRef(null);
+  const [currentTab, setCurrurentTab] = useState(prevTab.current || categories[0]);
+  const [ingrediebtDetailsModalIsVisible, setIngrediebtDetailsModalVisibility] = useState(null);
+  const ingredientListContainerRef = useRef(null);
+
+  useEffect(() => {
+    const ingredientListContainerElement = ingredientListContainerRef.current;
+
+    const observerOptions = {
+      root: ingredientListContainerElement,
+      rootMargin: '-5% 0px -90% 0px',
+    };
+
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach(({ isIntersecting, target }) => {
+        const targetCategory = target?.dataset.ingredientCategory;
+
+        if (isIntersecting && targetCategory !== prevTab.current) {
+          prevTab.current = targetCategory;
+          setCurrurentTab(targetCategory);
+        }
+      })
+    }, observerOptions);
+
+    [...ingredientListContainerElement.children].forEach(child => {
+      observer.observe(child);
+    });
+  }, []);
+
+  const openIngredientDetailsModal = useCallback(() => {
+    setIngrediebtDetailsModalVisibility(true);
+  },[]);
+
+  const closeIngredientDetailsModal = useCallback(() => {
+    setIngrediebtDetailsModalVisibility(false);
+    dispatch(setActiveIngredient(null));
+  },[dispatch]);
+
+  const onIngredientClick = useCallback(ingredientData => {
+    dispatch(setActiveIngredient(ingredientData));
+    openIngredientDetailsModal();
+  },[dispatch, openIngredientDetailsModal]);
+
+  const ingredientsListItems = useMemo(
+    () => categories.map((category, index) => {
+      const items = itemsDataByCategory[category];
+
+      return (
+        <li
+          className="mb-10"
+          key={index}
+          data-ingredient-category={category}
+        >
+          <h2 className="text text_type_main-medium mb-6">
+            {text.ingredientCategories[category]}
+          </h2>
+          <Ingredients
+            itemsData={items}
+            onIngredientClick={onIngredientClick}
+          />
+        </li>
+      )
+    }),
+    [itemsDataByCategory],
+  );
+
+  const tabs = useMemo(
+    () => categories.map((category, index) => (
+      <Tab
+        value={category}
+        active={currentTab === category}
+        onClick={setCurrurentTab}
+        key={`${+new Date()}-${index}}`}
+      >
+        {text.ingredientCategories[category]}
+      </Tab>
+    )),
+    [currentTab],
+  );
 
   return (
     <section className={styles.container}>
       <div className={`${styles.tabs} mb-10`}>
-        <Tab value="buns" active={currentTab === 'buns'} onClick={setCurrurentTab}>
-          {text.firstIngredientCategory}
-        </Tab>
-        <Tab value="sauces" active={currentTab === 'sauces'} onClick={setCurrurentTab}>
-          {text.secondIngredientCategory}
-        </Tab>
-        <Tab value="fillings" active={currentTab === 'fillings'} onClick={setCurrurentTab}>
-          {text.thirdIngredientCategory}
-        </Tab>
+        {tabs}
       </div>
-      <ul className={`${styles.list} ${styles['ingredients-list']}`}>
-        <li className="mb-10">
-          <h2 className="text text_type_main-medium mb-6">{text.firstIngredientCategory}</h2>
-          <Ingredients
-            itemsData={bunItemsData}
-            onIngredientClick={onBunIngredientClick}
-          />
-        </li>
-        <li className="mb-10">
-          <h2 className="text text_type_main-medium mb-6">{text.secondIngredientCategory}</h2>
-          <Ingredients
-            itemsData={sauceItemsData}
-            onIngredientClick={onSauceIngredientClick}
-          />
-        </li>
-        <li className="mb-10">
-          <h2 className="text text_type_main-medium mb-6">{text.thirdIngredientCategory}</h2>
-          <Ingredients
-            itemsData={fillingItemsData}
-            onIngredientClick={onFillingIngredientClick}
-          />
-        </li>
+      <ul
+        className={`${styles.list} ${styles['ingredients-list']}`}
+        ref={ingredientListContainerRef}
+      >
+        {ingredientsListItems}
       </ul>
       {
         ingrediebtDetailsModalIsVisible
         && (
           <Modal
-            closeModal={closeIngrediebtDetailsModal}
+            closeModal={closeIngredientDetailsModal}
             title={text.ingredientDetails}
             className={styles['ingredient-details']}
           >
-            <IngredientDetails ingredientData={activeIngredient} />
+            <IngredientDetails />
           </Modal>
         )
       }
     </section>
   );
-};
-
-BurgerIngredients.propTypes = {
-  ingredients: ingredientListPropTypes.isRequired,
 };
 
 export default BurgerIngredients;
