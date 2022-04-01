@@ -4,6 +4,7 @@ import {
 } from '@reduxjs/toolkit';
 
 import { ORDERS_URL } from '../../../constants';
+import { getCookie } from '../../utils';
 
 const generateFillingItemKey = ({ _id }) => `${_id}-${+new Date()}`;
 
@@ -22,7 +23,8 @@ export const fetchOrder = createAsyncThunk(
     const data = {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${getCookie('accessToken')}`
       },
       body,
     };

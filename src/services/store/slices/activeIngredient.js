@@ -1,6 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit';
 
-const initialState = 0;
+const initialState = null;
 
 const activeIngredientSlice = createSlice({
   name: 'activeIngredient',

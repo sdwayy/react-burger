@@ -1,5 +1,6 @@
 import React from "react";
 import { useSelector } from "react-redux";
+import { useParams } from 'react-router-dom';
 import styles from './ingredient-details.module.css';
 
 const text = {
@@ -10,7 +11,11 @@ const text = {
 };
 
 const IngredientDetails = () => {
-  const activeIngredient = useSelector(state => state.activeIngredient);
+  const { id } = useParams();
+  const { list } = useSelector(state => state.ingredients);
+  const ingredientData = list.find(i => i._id === id);
+
+  if (!ingredientData) return null;
 
   const {
     calories,
@@ -19,7 +24,7 @@ const IngredientDetails = () => {
     name,
     carbohydrates,
     fat,
-  } = activeIngredient;
+  } = ingredientData;
 
   return (
     <>

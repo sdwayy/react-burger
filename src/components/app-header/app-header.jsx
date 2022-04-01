@@ -7,6 +7,7 @@ import {
   ListIcon,
   ProfileIcon,
 } from '@ya.praktikum/react-developer-burger-ui-components';
+import NavItem from '../nav-item';
 
 const text = {
   constructor: 'Конструктор',
@@ -14,41 +15,34 @@ const text = {
   profile: 'Личный кабинет',
 };
 
-const Header = () => (
-  <header className={`pt-3 pb-3 ${styles.header}`}>
-    <div className={styles.container}>
-      <nav>
-        <ul className={styles.nav}>
-          <li className="mr-2">
-            <a
-              className={`text text_type_main-default pt-5 pr-4 pb-5 pl-4 ${styles.link}`}
-              href="/"
-            >
-              <BurgerIcon type="primary" />
-              <span className="ml-2">{text.constructor}</span>
-            </a>
-          </li>
-          <li>
-            <a
-              className={`text text_type_main-default text_color_inactive pt-5 pr-4 pb-5 pl-4 ${styles.link} ${styles['link--disabled']}`}
-              href="/"
-            >
-              <ListIcon type="secondary" />
-              <span className="ml-2">{text.orderFeed}</span>
-            </a>
-          </li>
-        </ul>
-      </nav>
-      <Logo />
-      <a
-        className={`text text_type_main-default text_color_inactive pt-5 pr-4 pb-5 pl-4 ${styles.link} ${styles['link--disabled']}`}
-        href="/"
-      >
-        <ProfileIcon type="secondary" />
-        <span className="ml-2">{text.profile}</span>
-      </a>
-    </div>
-  </header>
-);
-
+const Header = () => {
+  return (
+    <header className={`pt-3 pb-3 ${styles.header}`}>
+      <div className={styles.container}>
+        <nav className={styles.nav}>
+          <NavItem
+            className={`${styles['nav-item']} pt-5 pr-4 pb-5 pl-4`}
+            title={text.constructor}
+            Icon={BurgerIcon}
+            path="/"
+            exact={true}
+          />
+          <NavItem
+            className={`${styles['nav-item']} pt-5 pr-4 pb-5 pl-4`}
+            title={text.orderFeed}
+            Icon={ListIcon}
+            path="/orders"
+          />
+        </nav>
+        <Logo />
+        <NavItem
+          className={`${styles['nav-item']} pt-5 pr-4 pb-5 pl-4`}
+          title={text.profile}
+          Icon={ProfileIcon}
+          path="/profile"
+        />
+      </div>
+    </header>
+  );
+}
 export default Header;
