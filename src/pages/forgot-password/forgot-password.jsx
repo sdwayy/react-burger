@@ -12,14 +12,14 @@ import {
   Button
 } from '@ya.praktikum/react-developer-burger-ui-components';
 
-import { FORGOT_PASSWORD_URL } from '../../constants';
+import routes from '../../routes';
 
 export const ForgotPasswordPage = () => {
   const history = useHistory();
   const location = useLocation();
   const { state } = location;
 
-  const { isAuthorized } = useSelector(state => state.auth);
+  const { user } = useSelector(state => state.auth);
 
   const [formData, setFormData] = useState({
     email: '',
@@ -44,7 +44,7 @@ export const ForgotPasswordPage = () => {
 
     setError('');
 
-    fetch(FORGOT_PASSWORD_URL, data)
+    fetch(routes.forgotPassword, data)
       .then(response => response.json())
       .then(({ success, message }) => {
         if (!success) {
@@ -64,7 +64,7 @@ export const ForgotPasswordPage = () => {
       })
   };
 
-  if (isAuthorized) {
+  if (user) {
     return <Redirect to={state?.from.pathname || '/'} />
   }
 

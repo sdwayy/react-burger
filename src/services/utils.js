@@ -10,7 +10,7 @@ export const deleteCookie = name => {
 };
 
 export const setCookie = (name, value, props) => {
-  if (getCookie(name) && !props) {
+  if (getCookie(name) && props.expires !== -1) {
     deleteCookie(name);
   }
 

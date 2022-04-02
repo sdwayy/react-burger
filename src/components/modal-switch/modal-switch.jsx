@@ -6,7 +6,7 @@ import {
   Route,
 } from 'react-router-dom';
 
-import ProtectedRoute from './protected-route';
+import ProtectedRoute from '../protected-route/protected-route';
 import {
   ConstructorPage,
   IngredientPage,
@@ -17,10 +17,10 @@ import {
   ProfilePage,
   NotFound404,
   LogoutPage,
-} from '../pages';
+} from '../../pages';
 
-import IngredientDetails from "./ingredient-details/ingredient-details";
-import Modal from "./modal/modal";
+import IngredientDetails from "../ingredient-details/ingredient-details";
+import Modal from "../modal/modal";
 
 const ModalSwitch = () => {
   const location = useLocation();

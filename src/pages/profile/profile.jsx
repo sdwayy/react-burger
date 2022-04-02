@@ -8,7 +8,7 @@ import {
   Button,
 } from '@ya.praktikum/react-developer-burger-ui-components';
 
-import NavItem from '../../components/nav-item';
+import NavItem from '../../components/nav-item/nav-item';
 import { patchUser } from '../../services/store/slices/auth';
 
 export const ProfilePage = () => {
@@ -82,7 +82,7 @@ export const ProfilePage = () => {
         <Switch>
           <Route path="/profile" exact>
             <form
-              className={`form ${activeInput || formHasChanges ? '' : 'pb-20'}`}
+              className={`form ${formHasChanges ? '' : 'pb-20'}`}
               onSubmit={onFormSubmit}
             >
               <Input
@@ -116,7 +116,7 @@ export const ProfilePage = () => {
                 icon={activeInput === 'password' ? 'CloseIcon' : 'EditIcon'}
               />
               {
-                (activeInput || formHasChanges)
+                formHasChanges
                 && (
                     <div className={styles['btns-container']}>
                       <Button type="secondary" onClick={onCancelBtnClick}>

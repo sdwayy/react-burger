@@ -12,14 +12,14 @@ import {
   Button,
 } from '@ya.praktikum/react-developer-burger-ui-components';
 
-import { RESET_PASSWORD_URL } from '../../constants';
+import routes from '../../routes';
 
 export const ResetPasswordPage = () => {
   const history = useHistory();
   const { state } = useLocation();
 
   const passwordInputRef = useRef();
-  const { isAuthorized } = useSelector(state => state.auth);
+  const { user } = useSelector(state => state.auth);
 
   const [formData, setFormData] = useState({
     password: '',
@@ -61,7 +61,7 @@ export const ResetPasswordPage = () => {
 
     setError('');
 
-    fetch(RESET_PASSWORD_URL, data)
+    fetch(routes.resetPassword, data)
       .then(response => response.json())
       .then(({ success, message }) => {
         if (!success) {
@@ -78,7 +78,7 @@ export const ResetPasswordPage = () => {
 
   const from = state?.from.pathname;
 
-  if (isAuthorized || from !== '/forgot-password') {
+  if (user || from !== '/forgot-password') {
     return <Redirect to={state?.from.pathname || '/'} />
   }
 

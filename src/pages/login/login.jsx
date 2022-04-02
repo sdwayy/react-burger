@@ -19,7 +19,7 @@ export const LoginPage = () => {
   const { state } = useLocation();
   const dispatch = useDispatch();
   const {
-    isAuthorized,
+    user,
     errors: {
       signIn: loginError,
     },
@@ -39,8 +39,12 @@ export const LoginPage = () => {
     dispatch(signIn(formData));
   };
 
-  if (isAuthorized) {
-    return <Redirect to={state?.from.pathname || '/'} />
+  if (user) {
+    const from = state?.from.pathname;
+
+    return (
+      <Redirect to={from && from !== '/logout' ? from : '/'} />
+    );
   }
 
   return (

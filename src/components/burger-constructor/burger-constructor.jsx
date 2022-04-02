@@ -45,7 +45,7 @@ const BurgerConstructor = () => {
     ingredients,
     createdOrder,
     auth: {
-      isAuthorized,
+      user,
     },
   } = useSelector(state => state);
 
@@ -83,7 +83,7 @@ const BurgerConstructor = () => {
   };
 
   const onCreateOrderBtnClick = () => {
-    if (!isAuthorized) {
+    if (!user) {
       history.push({
         pathname: '/login',
         state: {

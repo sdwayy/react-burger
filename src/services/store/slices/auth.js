@@ -1,18 +1,27 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 
-import {
-  REGISTER_URL,
-  LOGIN_URL,
-  USER_URL,
-  TOKEN_URL,
-  LOGOUT_URL,
-} from '../../../constants';
+import routes from '../../../routes';
 import { deleteCookie, getCookie, setCookie } from '../../utils';
+
+const setAccesTokenCookie = accessToken => {
+  const TIMEOUT_IN_MINUTES = 20;
+  const token = accessToken.split('Bearer ')[1];
+  const expires = new Date(Date.now() + TIMEOUT_IN_MINUTES * 60 * 1000).toUTCString();
+  setCookie('accessToken', token, { expires });
+};
+
+const setRefreshTokenCookie = refreshToken => {
+  const TIMEOUT_IN_DAYS = 30;
+  const expires = new Date(Date.now() + TIMEOUT_IN_DAYS * 24 * 60 * 60 * 1000).toUTCString();
+  setCookie('refreshToken', refreshToken, { expires });
+};
 
 export const updateTokens = async () => {
   const token = getCookie('refreshToken');
 
-  if (!token) throw new Error ('refreshToken is undefined');
+  if (!token) {
+    throw new Error ('refreshToken is undefined');
+  }
 
   const data = {
     method: 'POST',
@@ -22,18 +31,18 @@ export const updateTokens = async () => {
     body: JSON.stringify({ token }),
   };
 
-  const response = await fetch(TOKEN_URL, data);
+  const response = await fetch(routes.token, data);
   const json = await response.json();
 
   const { success, message } = json;
 
   if (!success) {
-    return Promise.reject(message);
+    throw new Error(message);
   }
 
   const { accessToken, refreshToken } = json;
-  setCookie('accessToken', accessToken.split('Bearer ')[1]);
-  setCookie('refreshToken', refreshToken);
+  setAccesTokenCookie(accessToken);
+  setRefreshTokenCookie(refreshToken);
 
   return json;
 };
@@ -41,26 +50,21 @@ export const updateTokens = async () => {
 export const patchUser = createAsyncThunk(
   'auth/patchUser',
   async (userData, { dispatch }) => {
-    const token = getCookie('accessToken');
+    const refreshToken = getCookie('refreshToken');
+    const accessToken = getCookie('accessToken');
 
-    if (!token) {
-      dispatch({
-        type: 'auth/setAuthorizedState',
-        payload: false,
-      });
-      throw new Error('accessToken is undefined');
-    }
+    if (!refreshToken && !accessToken) throw new Error('user is not authorized');
 
     const data = {
       method: 'PATCH',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`
+        'Authorization': `Bearer ${accessToken}`
       },
       body: JSON.stringify(userData),
     };
 
-    const response = await fetch(USER_URL, data);
+    const response = await fetch(routes.user, data);
     const json = await response.json();
 
     const { success } = json;
@@ -81,24 +85,19 @@ export const patchUser = createAsyncThunk(
 export const getUser = createAsyncThunk(
   'auth/getUser',
   async (params, { dispatch }) => {
-    const token = getCookie('accessToken');
+    const refreshToken = getCookie('refreshToken');
+    const accessToken = getCookie('accessToken');
 
-    if (!token) {
-      dispatch({
-        type: 'auth/setAuthorizedState',
-        payload: false,
-      });
-      throw new Error('accessToken is undefined');
-    }
+    if (!refreshToken && !accessToken) throw new Error('user is not authorized');
 
     const data = {
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`
+        'Authorization': `Bearer ${accessToken}`
       },
     };
 
-    const response = await fetch(USER_URL, data);
+    const response = await fetch(routes.user, data);
     const json = await response.json();
     const { success } = json;
 
@@ -126,7 +125,7 @@ export const register = createAsyncThunk(
       body: JSON.stringify(userData),
     };
 
-    const response = await fetch(REGISTER_URL, data);
+    const response = await fetch(routes.register, data);
     const json = await response.json();
 
     return json;
@@ -144,7 +143,7 @@ export const signIn = createAsyncThunk(
       body: JSON.stringify(userData),
     };
 
-    const response = await fetch(LOGIN_URL, data);
+    const response = await fetch(routes.login, data);
     const json = await response.json();
 
     return json;
@@ -162,27 +161,28 @@ export const signOut = createAsyncThunk(
       body: JSON.stringify({ token: getCookie('refreshToken') }),
     };
 
-    const response = await fetch(LOGOUT_URL, data);
+    const response = await fetch(routes.logout, data);
     const json = await response.json();
 
     return json;
   },
 );
 
+const getUserFinallyMatcher = ({ type }) => (
+  type === getUser.fulfilled.type
+  || type === getUser.rejected.type
+);
+
 const initialState = {
   user: null,
-  isAuthorized: !!getCookie('refreshToken'),
+  isUserLoaded: false,
   errors: {},
 };
 
 const authSlice = createSlice({
   name: 'auth',
   initialState,
-  reducers: {
-    setAuthorizedState: (state, { payload }) => {
-      state.isAuthorized = payload;
-    },
-  },
+  reducers: {},
   extraReducers: builder => {
     builder
       .addCase(register.pending, state => {
@@ -202,12 +202,11 @@ const authSlice = createSlice({
           return;
         }
 
-        setCookie('accessToken', accessToken.split('Bearer ')[1]);
-        setCookie('refreshToken', refreshToken);
+        setAccesTokenCookie(accessToken);
+        setRefreshTokenCookie(refreshToken);
 
         state.errors.register = null;
         state.user = user;
-        state.isAuthorized = true;
       })
       .addCase(register.rejected, state => {
         state.errors.register = 'Что-то пошло не так';
@@ -229,12 +228,11 @@ const authSlice = createSlice({
           return;
         }
 
-        setCookie('accessToken', accessToken.split('Bearer ')[1]);
-        setCookie('refreshToken', refreshToken);
+        setAccesTokenCookie(accessToken);
+        setRefreshTokenCookie(refreshToken);
 
         state.errors.signIn = null;
         state.user = user;
-        state.isAuthorized = true;
       })
       .addCase(signIn.rejected, state => {
         state.errors.signIn = 'Что-то пошло не так';
@@ -281,7 +279,10 @@ const authSlice = createSlice({
         deleteCookie('accessToken');
         deleteCookie('refreshToken');
 
-        return { ...initialState, isAuthorized: false, };
+        state.user = null;
+      })
+      .addMatcher(getUserFinallyMatcher, state => {
+        state.isUserLoaded = true;
       })
   },
 });

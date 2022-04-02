@@ -7,7 +7,7 @@ import {
   ListIcon,
   ProfileIcon,
 } from '@ya.praktikum/react-developer-burger-ui-components';
-import NavItem from '../nav-item';
+import NavItem from '../nav-item/nav-item';
 
 const text = {
   constructor: 'Конструктор',

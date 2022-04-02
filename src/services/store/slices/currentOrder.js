@@ -3,7 +3,7 @@ import {
   createAsyncThunk,
 } from '@reduxjs/toolkit';
 
-import { ORDERS_URL } from '../../../constants';
+import routes from '../../../routes';
 import { getCookie } from '../../utils';
 
 const generateFillingItemKey = ({ _id }) => `${_id}-${+new Date()}`;
@@ -29,14 +29,14 @@ export const fetchOrder = createAsyncThunk(
       body,
     };
 
-    const response = await fetch(ORDERS_URL, data);
+    const response = await fetch(routes.orders, data);
     const json = await response.json();
 
     return json;
   }
 );
 
-const finallyMetcher = ({ type }) => (
+const finallyMatcher = ({ type }) => (
   type === fetchOrder.fulfilled.type
   || type === fetchOrder.rejected.type
 );
@@ -93,7 +93,7 @@ const currentOrderSlice = createSlice({
       .addCase(fetchOrder.rejected, state => {
         state.hasError = true;
       })
-      .addMatcher(finallyMetcher, state => {
+      .addMatcher(finallyMatcher, state => {
         state.isLoading = false;
       })
   },

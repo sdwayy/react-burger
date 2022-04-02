@@ -3,7 +3,7 @@ import {
   createAsyncThunk,
 } from '@reduxjs/toolkit';
 
-import { INGREDIENTS_URL } from '../../../constants';
+import routes from '../../../routes';
 
 export const fetchIngredients = createAsyncThunk(
   'ingredients/fetchIngredients',
@@ -14,14 +14,14 @@ export const fetchIngredients = createAsyncThunk(
       },
     };
 
-    const response = await fetch(INGREDIENTS_URL, data);
+    const response = await fetch(routes.ingredients, data);
     const json = await response.json();
 
     return json;
   }
 );
 
-const finallyMetcher = ({ type }) => (
+const finallyMatcher = ({ type }) => (
   type === fetchIngredients.fulfilled.type
   || type === fetchIngredients.rejected.type
 );
@@ -53,7 +53,7 @@ const ingredientsSlice = createSlice({
       .addCase(fetchIngredients.rejected, state => {
         state.hasError = true;
       })
-      .addMatcher(finallyMetcher, state => {
+      .addMatcher(finallyMatcher, state => {
         state.isLoading = false;
       })
   },
