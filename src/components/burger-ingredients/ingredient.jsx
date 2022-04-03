@@ -1,5 +1,5 @@
 import React from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import {
   useLocation,
   Link,
@@ -15,11 +15,8 @@ import {
   Counter,
 } from '@ya.praktikum/react-developer-burger-ui-components';
 
-import { setActiveIngredient } from '../../services/store/slices/activeIngredient';
-
 const Ingredient = ({ data }) => {
   const location = useLocation();
-  const dispatch = useDispatch();
 
   const { 
     image,
@@ -39,16 +36,11 @@ const Ingredient = ({ data }) => {
     .filter(ingredient => ingredient && ingredient._id === _id)
     .length;
 
-  const onIngredientClick = () => {
-    dispatch(setActiveIngredient(data));
-  };
-
   return (
     <li
       className={styles['ingredients-card']}
       key={_id}
       ref={ref}
-      onClick={onIngredientClick}
     >
       <Link
         to={{

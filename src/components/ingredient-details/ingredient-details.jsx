@@ -1,7 +1,6 @@
-import React, { useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import React from "react";
+import { useSelector } from "react-redux";
 import { useRouteMatch } from 'react-router-dom';
-import { setActiveIngredient } from "../../services/store/slices/activeIngredient";
 import styles from './ingredient-details.module.css';
 
 const text = {
@@ -12,23 +11,18 @@ const text = {
 };
 
 const IngredientDetails = () => {
-  const dispatch = useDispatch();
   const match = useRouteMatch('/ingredients/:id');
   const {
-    activeIngredient,
     ingredients: {
       list,
     },
   } = useSelector(state => state);
 
-  useEffect(() => {
-    if (!activeIngredient && match) {
-      const ingredient = list.find(({ _id }) => _id === match.params.id);
-      dispatch(setActiveIngredient(ingredient));
-    }
-  }, [list, match, activeIngredient, dispatch]);
+  if (!match) return null;
 
-  if (!activeIngredient) return null;
+  const ingredient = list.find(({ _id }) => _id === match.params.id)
+
+  if (!ingredient) return null;
 
   const {
     calories,
@@ -37,7 +31,7 @@ const IngredientDetails = () => {
     name,
     carbohydrates,
     fat,
-  } = activeIngredient;
+  } = ingredient;
 
   return (
     <>
