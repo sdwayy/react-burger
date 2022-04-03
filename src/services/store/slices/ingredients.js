@@ -3,26 +3,32 @@ import {
   createAsyncThunk,
 } from '@reduxjs/toolkit';
 
-import { INGREDIENTS_URL } from '../../../constants';
+import routes from '../../../routes';
 
 export const fetchIngredients = createAsyncThunk(
   'ingredients/fetchIngredients',
   async () => {
-    const response = await fetch(INGREDIENTS_URL);
+    const data = {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    };
+
+    const response = await fetch(routes.ingredients, data);
     const json = await response.json();
 
     return json;
   }
 );
 
-const finallyMetcher = ({ type }) => (
+const finallyMatcher = ({ type }) => (
   type === fetchIngredients.fulfilled.type
   || type === fetchIngredients.rejected.type
 );
 
 const initialState = {
   list: [],
-  isLoading: true,
+  isLoading: false,
   hasError: false,
 };
 
@@ -32,6 +38,9 @@ const ingredientsSlice = createSlice({
   reducers: {},
   extraReducers: builder => {
     builder
+      .addCase(fetchIngredients.pending, state => {
+        state.isLoading = true;
+      })
       .addCase(fetchIngredients.fulfilled, (state, { payload }) => {
         const { data, success } = payload;
 
@@ -44,7 +53,7 @@ const ingredientsSlice = createSlice({
       .addCase(fetchIngredients.rejected, state => {
         state.hasError = true;
       })
-      .addMatcher(finallyMetcher, state => {
+      .addMatcher(finallyMatcher, state => {
         state.isLoading = false;
       })
   },

@@ -1,5 +1,6 @@
 import React from "react";
 import { useSelector } from "react-redux";
+import { useRouteMatch } from 'react-router-dom';
 import styles from './ingredient-details.module.css';
 
 const text = {
@@ -10,7 +11,18 @@ const text = {
 };
 
 const IngredientDetails = () => {
-  const activeIngredient = useSelector(state => state.activeIngredient);
+  const match = useRouteMatch('/ingredients/:id');
+  const {
+    ingredients: {
+      list,
+    },
+  } = useSelector(state => state);
+
+  if (!match) return null;
+
+  const ingredient = list.find(({ _id }) => _id === match.params.id)
+
+  if (!ingredient) return null;
 
   const {
     calories,
@@ -19,7 +31,7 @@ const IngredientDetails = () => {
     name,
     carbohydrates,
     fat,
-  } = activeIngredient;
+  } = ingredient;
 
   return (
     <>

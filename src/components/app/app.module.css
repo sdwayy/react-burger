@@ -33,18 +33,45 @@ body > div:first-of-type {
   height: 100%;
 }
 
-.main {
+main {
   display: flex;
   width: 100%;
   flex-direction: column;
   max-width: var(--max-content-width);
+  height: 100%;
   margin: 0 auto;
-  padding-left: 20px;
 }
 
-.content-container {
+:global(.form-page) {
+  justify-content: center;
+  align-items: center;
+}
+
+:global(.form-container) {
   display: flex;
-  justify-content: space-between;
-  gap: 40px;
-  height: 100%;
+  flex-direction: column;
+  justify-content: center;
+  width: 480px;
+  text-align: center;
+}
+
+:global(.form) {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+  width: 480px;
+}
+
+:global(.link) {
+  text-decoration: none;
+}
+
+:global(.link:hover) {
+  opacity: 0.8;
+}
+
+:global(.form) :global(.input__container),
+:global(.form) :global(.input) {
+  width: 100%;
 }

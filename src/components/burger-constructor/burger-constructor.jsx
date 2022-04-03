@@ -3,6 +3,7 @@ import {
   useDispatch,
   useSelector,
 } from 'react-redux';
+import { useHistory, useLocation } from 'react-router-dom';
 import { useDrop } from 'react-dnd';
 
 import styles from './burger-constructor.module.css';
@@ -32,12 +33,28 @@ const text = {
   down: 'низ',
   createOrder: 'Оформить заказ',
   orderCreationErrorMessage: 'Что-то пошло не так :( Попробуйте еще раз.',
+  createInProgress: 'Оформляем...',
 };
 
 const BurgerConstructor = () => {
+  const location = useLocation();
+  const history = useHistory();
   const dispatch = useDispatch();
-  const { currentOrder, ingredients, createdOrder } = useSelector(state => state);
-  const { bun, filling, hasError } = currentOrder;
+  const {
+    currentOrder,
+    ingredients,
+    createdOrder,
+    auth: {
+      user,
+    },
+  } = useSelector(state => state);
+
+  const {
+    bun,
+    filling,
+    hasError,
+    isLoading
+  } = currentOrder;
 
   const orderPrice = useMemo(() => {
     const bunPrice = bun ? bun.price * 2 : 0;
@@ -66,6 +83,17 @@ const BurgerConstructor = () => {
   };
 
   const onCreateOrderBtnClick = () => {
+    if (!user) {
+      history.push({
+        pathname: '/login',
+        state: {
+          from: location,
+        },
+      });
+
+      return;
+    }
+
     dispatch(fetchOrder(currentOrder));
   };
 
@@ -128,10 +156,10 @@ const BurgerConstructor = () => {
         <Button
           type="primary"
           size="large"
-          disabled={orderPrice === 0 || !bun}
+          disabled={orderPrice === 0 || !bun || isLoading}
           onClick={onCreateOrderBtnClick}
         >
-          {text.createOrder}
+          {isLoading ? text.createInProgress : text.createOrder}
         </Button>
       </footer>
       {

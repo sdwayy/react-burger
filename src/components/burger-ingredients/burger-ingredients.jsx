@@ -1,25 +1,16 @@
 import React, {
   useState,
   useMemo,
-  useCallback,
   useEffect,
   useRef,
 } from 'react';
-import {
-  useDispatch,
-  useSelector,
-} from 'react-redux';
-
+import { useSelector } from 'react-redux';
 import styles from './burger-ingredients.module.css';
 
 import {
   Tab,
 } from '@ya.praktikum/react-developer-burger-ui-components';
 import Ingredients from './ingredients';
-import Modal from '../modal/modal';
-import IngredientDetails from '../ingredient-details/ingredient-details';
-
-import { setActiveIngredient } from '../../services/store/slices/activeIngredient';
 
 const categories = ['bun', 'sauce', 'main'];
 const text = {
@@ -32,7 +23,6 @@ const text = {
 };
 
 const BurgerIngredients = () => {
-  const dispatch = useDispatch();
   const { list: ingredients } = useSelector(state => state.ingredients);
 
   const itemsDataByCategory = useMemo(
@@ -52,7 +42,6 @@ const BurgerIngredients = () => {
 
   const prevTab = useRef(null);
   const [currentTab, setCurrurentTab] = useState(prevTab.current || categories[0]);
-  const [ingrediebtDetailsModalIsVisible, setIngrediebtDetailsModalVisibility] = useState(null);
   const ingredientListContainerRef = useRef(null);
 
   useEffect(() => {
@@ -79,20 +68,6 @@ const BurgerIngredients = () => {
     });
   }, []);
 
-  const openIngredientDetailsModal = useCallback(() => {
-    setIngrediebtDetailsModalVisibility(true);
-  },[]);
-
-  const closeIngredientDetailsModal = useCallback(() => {
-    setIngrediebtDetailsModalVisibility(false);
-    dispatch(setActiveIngredient(null));
-  },[dispatch]);
-
-  const onIngredientClick = useCallback(ingredientData => {
-    dispatch(setActiveIngredient(ingredientData));
-    openIngredientDetailsModal();
-  },[dispatch, openIngredientDetailsModal]);
-
   const ingredientsListItems = useMemo(
     () => categories.map((category, index) => {
       const items = itemsDataByCategory[category];
@@ -108,7 +83,6 @@ const BurgerIngredients = () => {
           </h2>
           <Ingredients
             itemsData={items}
-            onIngredientClick={onIngredientClick}
           />
         </li>
       )
@@ -141,18 +115,6 @@ const BurgerIngredients = () => {
       >
         {ingredientsListItems}
       </ul>
-      {
-        ingrediebtDetailsModalIsVisible
-        && (
-          <Modal
-            closeModal={closeIngredientDetailsModal}
-            title={text.ingredientDetails}
-            className={styles['ingredient-details']}
-          >
-            <IngredientDetails />
-          </Modal>
-        )
-      }
     </section>
   );
 };
