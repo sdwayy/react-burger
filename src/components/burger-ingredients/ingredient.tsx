@@ -1,5 +1,5 @@
 import React from 'react';
-import { useSelector } from 'react-redux';
+import { useAppSelector } from '../../utils/hooks';
 import {
   useLocation,
   Link,
@@ -8,14 +8,18 @@ import { useDrag } from 'react-dnd';
 
 import styles from './burger-ingredients.module.css';
 
-import { ingredientPropTypes } from '../../utils/prop-types';
-
 import {
   CurrencyIcon,
   Counter,
 } from '@ya.praktikum/react-developer-burger-ui-components';
 
-const Ingredient = ({ data }) => {
+import { TIngredient } from '../../utils/types';
+
+type TIngredientProps = {
+  data: TIngredient;
+};
+
+const Ingredient: React.FC<TIngredientProps> = ({ data }) => {
   const location = useLocation();
 
   const { 
@@ -25,7 +29,7 @@ const Ingredient = ({ data }) => {
     _id,
   } = data;
 
-  const { bun, filling } = useSelector(state => state.currentOrder);
+  const { bun, filling } = useAppSelector(state => state.currentOrder);
 
   const [, ref] = useDrag({
     type: 'ingredient',
@@ -64,10 +68,6 @@ const Ingredient = ({ data }) => {
       </Link>
     </li>
   );
-};
-
-Ingredient.propTypes = {
-  data: ingredientPropTypes.isRequired,
 };
 
 export default Ingredient;

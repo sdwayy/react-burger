@@ -1,16 +1,21 @@
-import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
+import {
+  createAsyncThunk,
+  createSlice,
+  AnyAction,
+} from '@reduxjs/toolkit';
 
 import routes from '../../../routes';
 import { deleteCookie, getCookie, setCookie } from '../../utils';
+import { TUserData } from '../../../utils/types';
 
-const setAccesTokenCookie = accessToken => {
+const setAccesTokenCookie = (accessToken: string) => {
   const TIMEOUT_IN_MINUTES = 20;
   const token = accessToken.split('Bearer ')[1];
   const expires = new Date(Date.now() + TIMEOUT_IN_MINUTES * 60 * 1000).toUTCString();
   setCookie('accessToken', token, { expires });
 };
 
-const setRefreshTokenCookie = refreshToken => {
+const setRefreshTokenCookie = (refreshToken: string) => {
   const TIMEOUT_IN_DAYS = 30;
   const expires = new Date(Date.now() + TIMEOUT_IN_DAYS * 24 * 60 * 60 * 1000).toUTCString();
   setCookie('refreshToken', refreshToken, { expires });
@@ -49,7 +54,7 @@ export const updateTokens = async () => {
 
 export const patchUser = createAsyncThunk(
   'auth/patchUser',
-  async (userData, { dispatch }) => {
+  async (userData: Partial<TUserData>, { dispatch }) => {
     const refreshToken = getCookie('refreshToken');
     const accessToken = getCookie('accessToken');
 
@@ -116,7 +121,7 @@ export const getUser = createAsyncThunk(
 
 export const register = createAsyncThunk(
   'auth/register',
-  async userData => {
+  async (userData: TUserData) => {
     const data = {
       method: 'POST',
       headers: {
@@ -134,7 +139,7 @@ export const register = createAsyncThunk(
 
 export const signIn = createAsyncThunk(
   'auth/signIn',
-  async userData => {
+  async (userData: Omit<TUserData, 'name'>) => {
     const data = {
       method: 'POST',
       headers: {
@@ -168,15 +173,33 @@ export const signOut = createAsyncThunk(
   },
 );
 
-const getUserFinallyMatcher = ({ type }) => (
+const getUserFinallyMatcher = ({ type }: AnyAction) => (
   type === getUser.fulfilled.type
   || type === getUser.rejected.type
 );
 
-const initialState = {
+type TInitialState = {
+  user: null | Omit<TUserData, 'password'>,
+  isUserLoaded: boolean;
+  errors: {
+    register: null | string,
+    signIn: null | string,
+    getUser: null | string,
+    patchUser: null | string,
+    signOut: null | string,
+  },
+}
+
+const initialState: TInitialState = {
   user: null,
   isUserLoaded: false,
-  errors: {},
+  errors: {
+    register: null,
+    signIn: null,
+    getUser: null,
+    patchUser: null,
+    signOut: null,
+  },
 };
 
 const authSlice = createSlice({

@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { BrowserRouter as Router } from 'react-router-dom';
-import styles from './app.module.css';
+import './app.module.css';
 
 import ModalSwitch from '../modal-switch/modal-switch';
 import Header from '../app-header/app-header';

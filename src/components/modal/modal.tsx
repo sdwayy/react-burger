@@ -1,5 +1,4 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import { createPortal } from 'react-dom';
 import styles from './modal.module.css';
 
@@ -10,13 +9,19 @@ import ModalOverlay from '../modal-overlay/modal-overlay';
 
 const modalRoot = document.getElementById("react-modals");
 
-const Modal = ({
+type TModalProps = {
+  title?: string;
+  closeModal: () => void;
+  className?: string;
+};
+
+const Modal: React.FC<TModalProps> = ({
   title,
   children,
   closeModal,
   className,
 }) => {
-  const onDocumentKeydown = event => {
+  const onDocumentKeydown = (event: KeyboardEvent) => {
     const { key } = event;
 
     switch (key) {
@@ -37,6 +42,8 @@ const Modal = ({
     };
   }, []);
 
+  if (!modalRoot) return null;
+
   return createPortal((
     <>
       <div className={`${styles.modal} pl-10 pr-10 pt-10 pb-15 ${className}`}>
@@ -53,16 +60,6 @@ const Modal = ({
       <ModalOverlay closeModal={closeModal} />
     </>
   ), modalRoot);
-};
-
-Modal.propTypes = {
-  title: PropTypes.string,
-  children: PropTypes.oneOfType([
-    PropTypes.arrayOf(PropTypes.node),
-    PropTypes.node,
-  ]).isRequired,
-  closeModal: PropTypes.func.isRequired,
-  className: PropTypes.string,
 };
 
 export default Modal;

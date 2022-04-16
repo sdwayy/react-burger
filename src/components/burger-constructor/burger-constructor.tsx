@@ -1,8 +1,9 @@
 import React, { useMemo } from 'react';
 import {
-  useDispatch,
-  useSelector,
-} from 'react-redux';
+  useAppDispatch,
+  useAppSelector,
+} from '../../utils/hooks';
+
 import { useHistory, useLocation } from 'react-router-dom';
 import { useDrop } from 'react-dnd';
 
@@ -26,7 +27,8 @@ import {
   moveFilling,
   toggleError,
 } from '../../services/store/slices/currentOrder';
-import { setCreatedOrder } from '../../services/store/slices/createdOrder';
+import { resetCreatedOrder } from '../../services/store/slices/createdOrder';
+import { TIngredient } from '../../utils/types';
 
 const text = {
   up: 'верх',
@@ -36,10 +38,14 @@ const text = {
   createInProgress: 'Оформляем...',
 };
 
+type TDropItem = {
+  id: string;
+};
+
 const BurgerConstructor = () => {
   const location = useLocation();
   const history = useHistory();
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const {
     currentOrder,
     ingredients,
@@ -47,7 +53,7 @@ const BurgerConstructor = () => {
     auth: {
       user,
     },
-  } = useSelector(state => state);
+  } = useAppSelector(state => state);
 
   const {
     bun,
@@ -62,12 +68,12 @@ const BurgerConstructor = () => {
     return filling.reduce((acc, { price }) =>  acc + price, bunPrice);
   }, [bun, filling]);
 
-  const [, dropRef] = useDrop({
+  const [, dropRef] = useDrop<TDropItem>({
     accept: 'ingredient',
     drop({ id }) {
       const itemData = ingredients.list.find(({ _id }) =>  _id === id);
 
-      if (itemData.type === 'bun') {
+      if (itemData?.type === 'bun') {
         dispatch(setBun(itemData));
       } else {
         dispatch(addFilling(itemData));
@@ -79,7 +85,7 @@ const BurgerConstructor = () => {
     if (hasError) {
       dispatch(toggleError());
     }
-    dispatch(setCreatedOrder(null));
+    dispatch(resetCreatedOrder());
   };
 
   const onCreateOrderBtnClick = () => {
@@ -97,11 +103,11 @@ const BurgerConstructor = () => {
     dispatch(fetchOrder(currentOrder));
   };
 
-  const handleRemoveFillingItem = itemData => {
+  const handleRemoveFillingItem = (itemData: TIngredient) => {
     dispatch(removeFilling(itemData));
   };
 
-  const handleMoveFillingItem = (currentIndex, newIndex) => {
+  const handleMoveFillingItem = (currentIndex: number, newIndex: number) => {
     dispatch(moveFilling({currentIndex, newIndex}));
   };
 
@@ -163,7 +169,7 @@ const BurgerConstructor = () => {
         </Button>
       </footer>
       {
-        (createdOrder || hasError)
+        (createdOrder?.number || hasError)
         && (
           <Modal closeModal={closeModal} className={styles['order-modal']}>
             {

@@ -1,5 +1,5 @@
 import React from 'react';
-import { useSelector } from 'react-redux';
+import { useAppSelector } from '../../utils/hooks';
 import styles from './order-details.module.css';
 
 import DoneIcon1x from '../../images/done.png';
@@ -12,8 +12,10 @@ const text = {
 };
 
 const OrderDetails = () => {
-  const { createdOrder } = useSelector(state => state);
+  const { createdOrder } = useAppSelector(state => state);
   const { number } = createdOrder;
+
+  if (!number) return null;
 
   return (
     <>

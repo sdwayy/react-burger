@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+
 import { Link, Redirect } from 'react-router-dom';
 
 import {
@@ -8,10 +8,11 @@ import {
   Button
 } from '@ya.praktikum/react-developer-burger-ui-components';
 import { register } from '../../services/store/slices/auth';
+import { useAppDispatch, useAppSelector } from '../../utils/hooks';
 
 export const RegisterPage = () => {
-  const dispatch = useDispatch();
-  const { user } = useSelector(state => state.auth);
+  const dispatch = useAppDispatch();
+  const { user } = useAppSelector(state => state.auth);
 
   const [formData, setFormData] = useState({
     name: '',
@@ -19,12 +20,12 @@ export const RegisterPage = () => {
     password: '',
   });
 
-  const onChange = e => {
+  const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const onFormSubmit = event => {
-    event.preventDefault();
+  const onFormSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
     dispatch(register(formData));
   };
 
@@ -60,7 +61,6 @@ export const RegisterPage = () => {
             size="default"
           />
           <Button
-            primary={true}
             size="medium"
           >
             Зарегистрироваться

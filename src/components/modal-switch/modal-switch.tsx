@@ -5,6 +5,7 @@ import {
   Switch,
   Route,
 } from 'react-router-dom';
+import { Location } from 'history';
 
 import ProtectedRoute from '../protected-route/protected-route';
 import {
@@ -22,8 +23,12 @@ import {
 import IngredientDetails from "../ingredient-details/ingredient-details";
 import Modal from "../modal/modal";
 
+type TModalSwitchLocationState = {
+  background: Location;
+};
+
 const ModalSwitch = () => {
-  const location = useLocation();
+  const location = useLocation<TModalSwitchLocationState>();
   const { goBack } = useHistory();
   const { state } = location;
   const background = state?.background;

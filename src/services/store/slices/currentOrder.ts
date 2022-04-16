@@ -1,20 +1,25 @@
 import {
   createSlice,
   createAsyncThunk,
+  AnyAction,
 } from '@reduxjs/toolkit';
 
+import { TIngredient } from '../../../utils/types';
 import routes from '../../../routes';
 import { getCookie } from '../../utils';
 
-const generateFillingItemKey = ({ _id }) => `${_id}-${+new Date()}`;
+const generateFillingItemKey = ({ _id }: TIngredient) => `${_id}-${+new Date()}`;
 
 export const fetchOrder = createAsyncThunk(
   'currentOrder/fetchOrder',
-  async ({ filling, bun }) => {
+  async ({ filling, bun }: TInitialState) => {
     const ingredientIds = [
-      bun._id,
       ...filling.map(({ _id }) => _id),
     ];
+
+    if (bun) {
+      ingredientIds.push(bun._id)
+    }
 
     const body = JSON.stringify({
       ingredients: ingredientIds,
@@ -36,12 +41,19 @@ export const fetchOrder = createAsyncThunk(
   }
 );
 
-const finallyMatcher = ({ type }) => (
+const finallyMatcher = ({ type }: AnyAction) => (
   type === fetchOrder.fulfilled.type
   || type === fetchOrder.rejected.type
 );
 
-const initialState = {
+type TInitialState = {
+  bun: null | TIngredient;
+  filling: TIngredient[];
+  isLoading: boolean;
+  hasError: boolean;
+};
+
+const initialState: TInitialState = {
   bun: null,
   filling: [],
   isLoading: false,
