@@ -12,13 +12,13 @@ const setAccesTokenCookie = (accessToken: string) => {
   const TIMEOUT_IN_MINUTES = 20;
   const token = accessToken.split('Bearer ')[1];
   const expires = new Date(Date.now() + TIMEOUT_IN_MINUTES * 60 * 1000).toUTCString();
-  setCookie('accessToken', token, { expires });
+  setCookie('accessToken', token, { expires, path: '/' });
 };
 
 const setRefreshTokenCookie = (refreshToken: string) => {
   const TIMEOUT_IN_DAYS = 30;
   const expires = new Date(Date.now() + TIMEOUT_IN_DAYS * 24 * 60 * 60 * 1000).toUTCString();
-  setCookie('refreshToken', refreshToken, { expires });
+  setCookie('refreshToken', refreshToken, { expires, path: '/' });
 };
 
 export const updateTokens = async () => {

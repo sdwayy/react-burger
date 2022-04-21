@@ -16,10 +16,6 @@ export const setCookie = (
   value: string = '',
   props?: TCookieProps,
 ) => {
-  if (getCookie(name) && props?.expires !== -1) {
-    deleteCookie(name);
-  }
-
   props = props || {};
 
   let exp = props.expires;
