@@ -1,9 +1,11 @@
 import {
   createSlice,
   createAsyncThunk,
+  AnyAction,
 } from '@reduxjs/toolkit';
 
 import routes from '../../../routes';
+import { TIngredient } from '../../../utils/types';
 
 export const fetchIngredients = createAsyncThunk(
   'ingredients/fetchIngredients',
@@ -21,12 +23,18 @@ export const fetchIngredients = createAsyncThunk(
   }
 );
 
-const finallyMatcher = ({ type }) => (
+const finallyMatcher = ({ type }: AnyAction) => (
   type === fetchIngredients.fulfilled.type
   || type === fetchIngredients.rejected.type
 );
 
-const initialState = {
+type TInitialState = {
+  list: TIngredient[];
+  isLoading: boolean;
+  hasError: boolean;
+};
+
+const initialState: TInitialState = {
   list: [],
   isLoading: false,
   hasError: false,

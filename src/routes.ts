@@ -1,7 +1,7 @@
 const HOST = 'https://norma.nomoreparties.space';
 const PREFIX = 'api';
 
-const getRoute = (...path) => [HOST, PREFIX, ...path].join('/');
+const getRoute = (...path: string[]) => [HOST, PREFIX, ...path].join('/');
 
 const routes = {
   ingredients: getRoute('ingredients'),

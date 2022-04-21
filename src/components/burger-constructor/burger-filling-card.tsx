@@ -1,12 +1,23 @@
 import React, { useRef } from 'react';
-import PropTypes from 'prop-types';
 import { useDrag, useDrop } from 'react-dnd';
 import styles from './burger-constructor.module.css';
-import { ingredientPropTypes } from '../../utils/prop-types';
 
 import IngredientCardContent from './ingredient-card-content';
+import { TIngredient } from '../../utils/types';
 
-const BurgerFillingCard = ({ data, index, handleRemove, handleMove }) => {
+type TBurgerFillingCardProps = {
+  data: TIngredient;
+  index: number;
+  handleRemove: Function;
+  handleMove: Function;
+};
+
+type TDragItem = {
+  key: string;
+  index: number;
+};
+
+const BurgerFillingCard: React.FC<TBurgerFillingCardProps> = ({ data, index, handleRemove, handleMove }) => {
   const {
     name,
     price,
@@ -14,9 +25,9 @@ const BurgerFillingCard = ({ data, index, handleRemove, handleMove }) => {
     key,
   } = data;
 
-  const ref = useRef();
+  const ref = useRef<HTMLLIElement>(null);
 
-  const [, dropRef] = useDrop({
+  const [, dropRef] = useDrop<TDragItem>({
     accept: 'fillingItem',
     hover(item, monitor) {
       if (!ref.current) {
@@ -33,7 +44,11 @@ const BurgerFillingCard = ({ data, index, handleRemove, handleMove }) => {
       const hoverBoundingRect = ref.current?.getBoundingClientRect();
       const hoverMiddleY = (hoverBoundingRect.bottom - hoverBoundingRect.top) / 2;
       const clientOffset = monitor.getClientOffset();
+
+      if (!clientOffset) return;
+
       const hoverClientY = clientOffset.y - hoverBoundingRect.top;
+
 
       if (dragIndex < hoverIndex && hoverClientY < hoverMiddleY) {
         return;
@@ -75,13 +90,6 @@ const BurgerFillingCard = ({ data, index, handleRemove, handleMove }) => {
       />
     </li>
   );
-};
-
-BurgerFillingCard.propTypes = {
-  data: ingredientPropTypes.isRequired,
-  index: PropTypes.number.isRequired,
-  handleRemove: PropTypes.func.isRequired,
-  handleMove: PropTypes.func.isRequired,
 };
 
 export default BurgerFillingCard;

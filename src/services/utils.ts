@@ -1,19 +1,21 @@
-export const getCookie = name => {
+import { TCookieProps } from "../utils/types";
+
+export const getCookie = (name: string) => {
   const matches = document.cookie.match(
     new RegExp('(?:^|; )' + name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, '\\$1') + '=([^;]*)')
   );
   return matches ? decodeURIComponent(matches[1]) : undefined;
 };
 
-export const deleteCookie = name => {
-  setCookie(name, null, { expires: -1 });
+export const deleteCookie = (name: string) => {
+  setCookie(name, undefined, { expires: -1 });
 };
 
-export const setCookie = (name, value, props) => {
-  if (getCookie(name) && props.expires !== -1) {
-    deleteCookie(name);
-  }
-
+export const setCookie = (
+  name: string,
+  value: string = '',
+  props?: TCookieProps,
+) => {
   props = props || {};
 
   let exp = props.expires;
@@ -24,19 +26,20 @@ export const setCookie = (name, value, props) => {
     exp = props.expires = d;
   }
 
-  if (exp && exp.toUTCString) {
+  if (exp instanceof Date) {
     props.expires = exp.toUTCString();
   }
 
   value = encodeURIComponent(value);
-  let updatedCookie = name + '=' + value;
+  let updatedCookie = `${name}=${value}`;
+
 
   for (const propName in props) {
-    updatedCookie += '; ' + propName;
+    updatedCookie += `;${propName}`;
     const propValue = props[propName];
 
     if (propValue !== true) {
-      updatedCookie += '=' + propValue;
+      updatedCookie += `=${propValue}`;
     }
   }
 

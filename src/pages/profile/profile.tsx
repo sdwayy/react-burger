@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
 import { Switch, Route } from 'react-router-dom';
 import styles from './profile.module.css';
 
@@ -10,24 +9,28 @@ import {
 
 import NavItem from '../../components/nav-item/nav-item';
 import { patchUser } from '../../services/store/slices/auth';
+import { useAppDispatch, useAppSelector } from '../../utils/hooks';
+import { TUserData } from '../../utils/types';
 
 export const ProfilePage = () => {
-  const dispatch = useDispatch();
-  const { user } = useSelector(state => state.auth);
+  const dispatch = useAppDispatch();
+  const { user } = useAppSelector(state => state.auth);
 
-  const currentUserData = {
-    ...user,
+  const currentUserData: TUserData = {
+    name: '',
     password: '',
+    email: '',
+    ...user,
   };
 
   const [formData, setFormData] = useState(currentUserData);
-  const [activeInput, setActiveInput] = useState(null);
+  const [activeInput, setActiveInput] = useState<null | string>(null);
 
   const formHasChanges = Object
     .entries(formData)
     .some(([key, value]) => value !== currentUserData[key]);
 
-  const onInputChange = e => {
+  const onInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     const currentValue = formData[name];
 
@@ -36,7 +39,7 @@ export const ProfilePage = () => {
     }
   };
 
-  const onInputFocus = e => {
+  const onInputFocus = (e: React.FocusEvent<HTMLInputElement>) => {
     setActiveInput(e.target.name);
   };
 
@@ -44,12 +47,12 @@ export const ProfilePage = () => {
     setActiveInput(null);
   };
 
-  const onCancelBtnClick = e => {
+  const onCancelBtnClick = (e: React.SyntheticEvent) => {
     e.preventDefault();
     setFormData(currentUserData);
   };
 
-  const onFormSubmit = e => {
+  const onFormSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     dispatch(patchUser(formData))
   };

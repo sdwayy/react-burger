@@ -1,7 +1,5 @@
 import React from 'react';
-import {
-  useSelector,
-} from 'react-redux';
+
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 
@@ -10,6 +8,8 @@ import styles from './constructor.module.css';
 import BurgerIngredients from '../../components/burger-ingredients/burger-ingredients';
 import BurgerConstructor from '../../components/burger-constructor/burger-constructor';
 
+import { useAppSelector } from '../../utils/hooks';
+
 const text = {
   errorMessage: 'В приложении произошла ошибка. Пожалуйста, перезагрузите страницу',
   errorTitle: 'Что-то пошло не так :(',
@@ -17,7 +17,7 @@ const text = {
 };
 
 export const ConstructorPage = () => {
-  const { ingredients } = useSelector(state => state);
+  const { ingredients } = useAppSelector(state => state);
   const { hasError, isLoading, list } = ingredients;
 
   return (

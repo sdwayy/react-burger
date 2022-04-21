@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useSelector } from 'react-redux';
+
 import {
   Link,
   Redirect,
@@ -13,13 +13,15 @@ import {
 } from '@ya.praktikum/react-developer-burger-ui-components';
 
 import routes from '../../routes';
+import { useAppSelector } from '../../utils/hooks';
+import { TLocationState } from '../../utils/types';
 
 export const ForgotPasswordPage = () => {
   const history = useHistory();
-  const location = useLocation();
+  const location = useLocation<TLocationState>();
   const { state } = location;
 
-  const { user } = useSelector(state => state.auth);
+  const { user } = useAppSelector(state => state.auth);
 
   const [formData, setFormData] = useState({
     email: '',
@@ -27,11 +29,11 @@ export const ForgotPasswordPage = () => {
 
   const [error, setError] = useState('');
 
-  const onChange = e => {
+  const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const onFormSubmit = e => {
+  const onFormSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
     const data = {
@@ -90,7 +92,7 @@ export const ForgotPasswordPage = () => {
               </p>
             )
           }
-          <Button primary={true} size="medium">
+          <Button size="medium">
             Восстановить
           </Button>
         </form>

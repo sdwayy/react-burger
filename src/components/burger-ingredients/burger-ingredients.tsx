@@ -4,15 +4,16 @@ import React, {
   useEffect,
   useRef,
 } from 'react';
-import { useSelector } from 'react-redux';
+import { useAppSelector } from '../../utils/hooks';
 import styles from './burger-ingredients.module.css';
 
 import {
   Tab,
 } from '@ya.praktikum/react-developer-burger-ui-components';
 import Ingredients from './ingredients';
+import { TIngredient } from '../../utils/types';
 
-const categories = ['bun', 'sauce', 'main'];
+const categories = ['bun', 'sauce', 'main'] as const;
 const text = {
   ingredientCategories: {
     bun: 'Булки',
@@ -23,10 +24,10 @@ const text = {
 };
 
 const BurgerIngredients = () => {
-  const { list: ingredients } = useSelector(state => state.ingredients);
+  const { list: ingredients } = useAppSelector(state => state.ingredients);
 
   const itemsDataByCategory = useMemo(
-    () => ingredients.reduce((acc, item) => {
+    () => ingredients.reduce((acc: { [key: string]: TIngredient[] }, item: TIngredient) => {
       const { type } = item;
 
       if (!acc[type]) {
@@ -40,9 +41,9 @@ const BurgerIngredients = () => {
     [ingredients],
   );
 
-  const prevTab = useRef(null);
+  const prevTab = useRef<null | string>(null);
   const [currentTab, setCurrurentTab] = useState(prevTab.current || categories[0]);
-  const ingredientListContainerRef = useRef(null);
+  const ingredientListContainerRef = useRef<HTMLUListElement>(null);
 
   useEffect(() => {
     const ingredientListContainerElement = ingredientListContainerRef.current;
@@ -54,19 +55,24 @@ const BurgerIngredients = () => {
 
     const observer = new IntersectionObserver(entries => {
       entries.forEach(({ isIntersecting, target }) => {
-        const targetCategory = target?.dataset.ingredientCategory;
+        if (target instanceof HTMLElement) {
+          const targetCategory = target?.dataset.ingredientCategory;
 
-        if (isIntersecting && targetCategory !== prevTab.current) {
-          prevTab.current = targetCategory;
-          setCurrurentTab(targetCategory);
+          if (isIntersecting && targetCategory && targetCategory !== prevTab.current) {
+            prevTab.current = targetCategory;
+            setCurrurentTab(targetCategory);
+          }
         }
       })
     }, observerOptions);
 
-    [...ingredientListContainerElement.children].forEach(child => {
-      observer.observe(child);
-    });
+      if (ingredientListContainerElement) {
+        [...Array.from(ingredientListContainerElement.children)].forEach(child => {
+          observer.observe(child);
+        });
+      }
   }, []);
+
 
   const ingredientsListItems = useMemo(
     () => categories.map((category, index) => {
@@ -91,7 +97,7 @@ const BurgerIngredients = () => {
   );
 
   const tabs = useMemo(
-    () => categories.map((category, index) => (
+    () => categories.map((category , index) => (
       <Tab
         value={category}
         active={currentTab === category}

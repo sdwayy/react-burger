@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+
 import {
   Link,
   Redirect,
@@ -14,27 +14,29 @@ import {
 } from '@ya.praktikum/react-developer-burger-ui-components';
 
 import { signIn } from '../../services/store/slices/auth';
+import { useAppDispatch, useAppSelector } from '../../utils/hooks';
+import { TLocationState } from '../../utils/types';
 
 export const LoginPage = () => {
-  const { state } = useLocation();
-  const dispatch = useDispatch();
+  const { state } = useLocation<TLocationState>();
+  const dispatch = useAppDispatch();
   const {
     user,
     errors: {
       signIn: loginError,
     },
-  } = useSelector(state => state.auth);
+  } = useAppSelector(state => state.auth);
 
   const [formData, setFormData] = useState({
     email: '',
     password: '',
   });
 
-  const onChange = e => {
+  const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const onFormSubmit = e => {
+  const onFormSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     dispatch(signIn(formData));
   };
@@ -70,7 +72,7 @@ export const LoginPage = () => {
             loginError
             && <p className="text text_type_main-default text_color_error">{loginError}</p>
           }
-          <Button primary={true} size="medium">
+          <Button size="medium">
             Войти
           </Button>
         </form>

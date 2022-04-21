@@ -1,5 +1,5 @@
 import React from "react";
-import { useSelector } from "react-redux";
+import { useAppSelector } from '../../utils/hooks';
 import { useRouteMatch } from 'react-router-dom';
 import styles from './ingredient-details.module.css';
 
@@ -10,13 +10,17 @@ const text = {
   carbohydrates: 'Углводы, г',
 };
 
+type TMatchParams = {
+  id: string,
+};
+
 const IngredientDetails = () => {
-  const match = useRouteMatch('/ingredients/:id');
+  const match = useRouteMatch<TMatchParams>('/ingredients/:id');
   const {
     ingredients: {
       list,
     },
-  } = useSelector(state => state);
+  } = useAppSelector(state => state);
 
   if (!match) return null;
 

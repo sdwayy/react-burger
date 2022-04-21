@@ -1,13 +1,21 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import { Link, useRouteMatch } from 'react-router-dom';
 
-const NavItem = ({
+type TNavItemProps = {
+  title: string;
+  exact?: boolean;
+  Icon?: React.ElementType;
+  className: string;
+  textType?: string;
+  path: string;
+};
+
+const NavItem: React.FC<TNavItemProps> = ({
   title,
   exact,
   Icon,
   className,
-  textType,
+  textType = 'default',
   path,
 }) => {
   const match = useRouteMatch(path);
@@ -32,19 +40,6 @@ const NavItem = ({
           </span>
         </Link>
       )
-};
-
-NavItem.propTypes = {
-  title: PropTypes.string.isRequired,
-  exact: PropTypes.bool,
-  Icon: PropTypes.elementType,
-  className: PropTypes.string,
-  textType: PropTypes.string.isRequired,
-  path: PropTypes.string.isRequired,
-};
-
-NavItem.defaultProps = {
-  textType: 'default',
 };
 
 export default NavItem;

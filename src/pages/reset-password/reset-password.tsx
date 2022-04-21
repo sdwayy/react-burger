@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { useSelector } from 'react-redux';
+
 import {
   Link,
   Redirect,
@@ -13,13 +13,15 @@ import {
 } from '@ya.praktikum/react-developer-burger-ui-components';
 
 import routes from '../../routes';
+import { useAppSelector } from '../../utils/hooks';
+import { TLocationState } from '../../utils/types';
 
 export const ResetPasswordPage = () => {
   const history = useHistory();
-  const { state } = useLocation();
+  const { state } = useLocation<TLocationState>();
 
-  const passwordInputRef = useRef();
-  const { user } = useSelector(state => state.auth);
+  const passwordInputRef = useRef<HTMLInputElement>(null);
+  const { user } = useAppSelector(state => state.auth);
 
   const [formData, setFormData] = useState({
     password: '',
@@ -41,14 +43,17 @@ export const ResetPasswordPage = () => {
 
   const onPasswordInputIconClick = () => {
     togglePasswordVisibility();
-    passwordInputRef.current.focus();
+
+    if (passwordInputRef.current) {
+      passwordInputRef.current.focus();
+    }
   };
 
-  const onChange = e => {
+  const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const onFormSubmit = e => {
+  const onFormSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
     const data = {
@@ -117,7 +122,7 @@ export const ResetPasswordPage = () => {
               </p>
             )
           }
-          <Button primary={true} size="medium">
+          <Button size="medium">
             Сохранить
           </Button>
         </form>
