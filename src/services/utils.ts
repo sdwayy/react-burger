@@ -1,4 +1,5 @@
-import { TCookieProps } from "../utils/types";
+import moment from "moment";
+import { TCookieProps, TIngredient } from "../utils/types";
 
 export const getCookie = (name: string) => {
   const matches = document.cookie.match(
@@ -8,7 +9,7 @@ export const getCookie = (name: string) => {
 };
 
 export const deleteCookie = (name: string) => {
-  setCookie(name, undefined, { expires: -1 });
+  setCookie(name, undefined, { expires: -1, path: '/' });
 };
 
 export const setCookie = (
@@ -33,6 +34,7 @@ export const setCookie = (
   value = encodeURIComponent(value);
   let updatedCookie = `${name}=${value}`;
 
+  props.path = '/';
 
   for (const propName in props) {
     updatedCookie += `;${propName}`;
@@ -44,4 +46,24 @@ export const setCookie = (
   }
 
   document.cookie = updatedCookie;
+};
+
+export const formatDate = (date: string | Date) => {
+  const orderTime = moment(date).calendar(null, {
+    sameDay: '[Сегодня], LT',
+    lastDay: '[Вчера], LT',
+    lastWeek: '[На прошлой неделе], LT',
+    sameElse: 'DD/MM/YYYY, LT'
+  });
+  const utcOffset = moment().utcOffset() / 60;
+  const timezone = `i-GMT${utcOffset > 0 ? `+${utcOffset}` : utcOffset}`;
+
+  return `${orderTime} ${timezone}`;
+};
+
+export const calculateBurgerPrice = (ingredients: TIngredient[]) => {
+  return ingredients.reduce((acc, { price, type }) =>  {
+    if (type === 'bun') return acc += price * 2;
+    return acc += price;
+  }, 0);
 };

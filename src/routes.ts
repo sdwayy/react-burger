@@ -1,20 +1,34 @@
-const HOST = 'https://norma.nomoreparties.space';
+const HOST = 'norma.nomoreparties.space';
 const PREFIX = 'api';
 
-const getRoute = (...path: string[]) => [HOST, PREFIX, ...path].join('/');
+type TRouteParams = {
+  protocol?: 'https' | 'wss';
+  path: string;
+};
+
+const getRoute = ({ path, protocol = 'https' }: TRouteParams) => {
+  const parts = [HOST]
+  if (protocol !== 'wss') parts.push(PREFIX)
+  parts.push(path)
+
+  return `${protocol}://${parts.join('/')}`
+};
 
 const routes = {
-  ingredients: getRoute('ingredients'),
-  orders: getRoute('orders'),
+  ingredients: getRoute({ path: 'ingredients' }),
 
-  forgotPassword: getRoute('password-reset'),
-  resetPassword: getRoute('password-reset', 'reset'),
+  orders: getRoute({ path: 'orders' }),
+  userOrders: getRoute({ protocol: 'wss', path: 'orders' }),
+  feed: getRoute({ protocol: 'wss', path: 'orders/all', }),
 
-  register: getRoute('auth', 'register'),
-  login: getRoute('auth', 'login'),
-  logout: getRoute('auth', 'logout'),
-  token: getRoute('auth', 'token'),
-  user: getRoute('auth', 'user'),
+  forgotPassword: getRoute({ path: 'password-reset' }),
+  resetPassword: getRoute({ path: 'password-reset/reset' }),
+
+  register: getRoute({ path: 'auth/register' }),
+  login: getRoute({ path: 'auth/login' }),
+  logout: getRoute({ path: 'auth/logout' }),
+  token: getRoute({ path: 'auth/token' }),
+  user: getRoute({ path: 'auth/user' }),
 };
 
 export default routes;

@@ -24,7 +24,7 @@ const IngredientDetails = () => {
 
   if (!match) return null;
 
-  const ingredient = list.find(({ _id }) => _id === match.params.id)
+  const ingredient = list.find(({ _id }) => _id === match.params.id);
 
   if (!ingredient) return null;
 

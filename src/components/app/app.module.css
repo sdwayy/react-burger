@@ -6,6 +6,8 @@
   --scrollbar-width: 8px;
   --scrollbar-margin-bottom: 50px;
 
+  --status-ready-color: #00CCCC;
+
   --max-content-width: 1260px;
 }
 
@@ -40,6 +42,11 @@ main {
   max-width: var(--max-content-width);
   height: 100%;
   margin: 0 auto;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
 }
 
 :global(.form-page) {

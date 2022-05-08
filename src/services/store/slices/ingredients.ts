@@ -5,9 +5,11 @@ import {
 } from '@reduxjs/toolkit';
 
 import routes from '../../../routes';
-import { TIngredient } from '../../../utils/types';
+import { TApiResponse, TIngredient } from '../../../utils/types';
 
-export const fetchIngredients = createAsyncThunk(
+type TIngredientsResponse = TApiResponse & { data: TIngredient[] };
+
+export const fetchIngredients = createAsyncThunk<TIngredientsResponse>(
   'ingredients/fetchIngredients',
   async () => {
     const data = {
@@ -29,7 +31,7 @@ const finallyMatcher = ({ type }: AnyAction) => (
 );
 
 type TInitialState = {
-  list: TIngredient[];
+  list: readonly TIngredient[];
   isLoading: boolean;
   hasError: boolean;
 };

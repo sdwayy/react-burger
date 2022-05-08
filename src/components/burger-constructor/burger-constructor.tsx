@@ -16,7 +16,7 @@ import {
 
 import IngredientCardContent from './ingredient-card-content';
 import Modal from '../modal/modal';
-import OrderDetails from '../order-details/order-details';
+import CreatedOrder from '../created-order/created-order';
 import BurgerFillingCard from './burger-filling-card';
 
 import {
@@ -29,6 +29,7 @@ import {
 } from '../../services/store/slices/currentOrder';
 import { resetCreatedOrder } from '../../services/store/slices/createdOrder';
 import { TIngredient } from '../../utils/types';
+import { calculateBurgerPrice } from '../../services/utils';
 
 const text = {
   up: 'верх',
@@ -62,21 +63,27 @@ const BurgerConstructor = () => {
     isLoading
   } = currentOrder;
 
-  const orderPrice = useMemo(() => {
-    const bunPrice = bun ? bun.price * 2 : 0;
+  const burgerIngredients = useMemo(() =>  {
+    const items = [...filling];
 
-    return filling.reduce((acc, { price }) =>  acc + price, bunPrice);
-  }, [bun, filling]);
+    if (bun) items.push(bun);
+
+    return items;
+  },[bun, filling]);
+
+  const price = useMemo(() => calculateBurgerPrice(burgerIngredients), [burgerIngredients]);
 
   const [, dropRef] = useDrop<TDropItem>({
     accept: 'ingredient',
     drop({ id }) {
       const itemData = ingredients.list.find(({ _id }) =>  _id === id);
 
-      if (itemData?.type === 'bun') {
-        dispatch(setBun(itemData));
-      } else {
-        dispatch(addFilling(itemData));
+      if (itemData) {
+        if (itemData.type === 'bun') {
+          dispatch(setBun(itemData));
+        } else {
+          dispatch(addFilling(itemData));
+        }
       }
     },
   });
@@ -113,69 +120,71 @@ const BurgerConstructor = () => {
 
   return (
     <section className={`${styles.container} pl-4`} ref={dropRef}>
-      {
-        bun
-        && (
-          <div className={`${styles['order-item']} mb-4 pl-8 pr-4`}>
-            <IngredientCardContent
-              type="top"
-              isLocked={true}
-              text={`${bun.name}\n(${text.up})`}
-              price={bun.price}
-              thumbnail={bun.image_mobile}
-            />
-          </div>
-        )
-      }
-      <ul className={`${styles['filling-list']} pr-2`}>
+      <div className={styles.ingredients}>
         {
-          filling.map((itemData, index) => (
-            <BurgerFillingCard
-              data={itemData}
-              handleRemove={handleRemoveFillingItem}
-              handleMove={handleMoveFillingItem}
-              key={itemData.key}
-              index={index}
-            />
-          ))
+          bun
+          && (
+            <div className={`${styles['order-item']} mb-4 pl-8 pr-4`}>
+              <IngredientCardContent
+                type="top"
+                isLocked={true}
+                text={`${bun.name}\n(${text.up})`}
+                price={bun.price}
+                thumbnail={bun.image_mobile}
+              />
+            </div>
+          )
         }
-      </ul>
-      {
-        bun
-        && (
-          <div className={`${styles['order-item']} mt-4 pl-8 pr-4`}>
-            <IngredientCardContent
-              type="bottom"
-              isLocked={true}
-              text={`${bun.name}\n(${text.down})`}
-              price={bun.price}
-              thumbnail={bun.image_mobile} 
-            />
-          </div>
-        )
-      }
+        <ul className={`${styles['filling-list']} pr-2`}>
+          {
+            filling.map((itemData, index) => (
+              <BurgerFillingCard
+                data={itemData}
+                handleRemove={handleRemoveFillingItem}
+                handleMove={handleMoveFillingItem}
+                key={itemData.key}
+                index={index}
+              />
+            ))
+          }
+        </ul>
+        {
+          bun
+          && (
+            <div className={`${styles['order-item']} mt-4 pl-8 pr-4`}>
+              <IngredientCardContent
+                type="bottom"
+                isLocked={true}
+                text={`${bun.name}\n(${text.down})`}
+                price={bun.price}
+                thumbnail={bun.image_mobile}
+              />
+            </div>
+          )
+        }
+      </div>
       <footer className="pr-4 mt-10">
         <p className={`${styles.sum} mr-10`}>
-          <span className="text text_type_digits-medium mr-2">{orderPrice}</span>
+          <span className="text text_type_digits-medium mr-2">{price}</span>
           <CurrencyIcon type="primary" />
         </p>
         <Button
           type="primary"
           size="large"
-          disabled={orderPrice === 0 || !bun || isLoading}
+          disabled={price === 0 || !bun || isLoading}
           onClick={onCreateOrderBtnClick}
         >
           {isLoading ? text.createInProgress : text.createOrder}
         </Button>
       </footer>
       {
-        (createdOrder?.number || hasError)
+        (createdOrder.hasOwnProperty('number') || hasError)
         && (
           <Modal closeModal={closeModal} className={styles['order-modal']}>
             {
               hasError
                 ? <p className="text text_type_main-default">{text.orderCreationErrorMessage}</p>
-                : <OrderDetails />
+                : <CreatedOrder />
             }
           </Modal>
         )
