@@ -8,14 +8,16 @@ import {
   setFeedData,
   onFeedConectionClose,
   onFeedConectionOpen,
-  onFeedConectionError,
+  onFeedError,
+  closeFeedConnection,
 } from './slices/feed';
 import {
   initUserOrders,
   onUserOrdersConectionClose,
-  onUserOrdersConectionError,
+  onUserOrdersError,
   onUserOrdersConectionOpen,
-  setUserOrdersData
+  setUserOrdersData,
+  closeUserOrdersConnection,
 } from './slices/userOrders';
 
 import { TFeedData } from '../../utils/types';
@@ -30,8 +32,9 @@ export const store = configureStore({
       },
       {
         init: initFeed,
+        close: closeFeedConnection,
         onMessage: setFeedData,
-        onError: onFeedConectionError,
+        onError: onFeedError,
         onOpen: onFeedConectionOpen,
         onClose: onFeedConectionClose,
       },
@@ -43,8 +46,9 @@ export const store = configureStore({
       },
       {
         init: initUserOrders,
+        close: closeUserOrdersConnection,
         onMessage: setUserOrdersData,
-        onError: onUserOrdersConectionError,
+        onError: onUserOrdersError,
         onOpen: onUserOrdersConectionOpen,
         onClose: onUserOrdersConectionClose,
       },

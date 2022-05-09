@@ -6,19 +6,17 @@ import { formatDate } from '../../utils';
 type TInitialState = TSocketState<TFeedOrder[]>;
 
 const initialState: TInitialState = {
-  data: null,
-  isLoading: true,
+  data: [],
+  isConnected: true,
   hasError: false,
-  isInited: false,
 };
 
 const userOrdersSlice = createSlice({
   name: 'userOrders',
   initialState,
   reducers: {
-    init: state => {
-      state.isInited = true;
-    },
+    init: () => {},
+    closeUserOrdersConnection: () => {},
     setData: (state, { payload }: PayloadAction<TFeedData>) => {
       const formattedData = payload.orders.map(order => {
         const { createdAt } = order;
@@ -28,15 +26,16 @@ const userOrdersSlice = createSlice({
       state.data = formattedData;
     },
     onConectionOpen: state => {
-      state.isLoading = false;
+      state.isConnected = true;
       state.hasError = false;
     },
     onConectionClose: state => {
       state.hasError = false;
+      state.isConnected = false;
     },
-    onConectionError: state => {
+    onError: state => {
       state.hasError = true;
-      state.isLoading = false;
+      state.isConnected = false;
     },
   },
 });
@@ -47,5 +46,6 @@ export const {
   setData: setUserOrdersData,
   onConectionOpen: onUserOrdersConectionOpen,
   onConectionClose: onUserOrdersConectionClose,
-  onConectionError: onUserOrdersConectionError,
+  onError: onUserOrdersError,
+  closeUserOrdersConnection,
 } = userOrdersSlice.actions;

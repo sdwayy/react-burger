@@ -6,9 +6,13 @@ import { formatDate } from '../../utils';
 type TInitialState = TSocketState<TFeedData>;
 
 const initialState: TInitialState = {
-  data: null,
-  isLoading: true,
+  data: {
+    total: 0,
+    totalToday: 0,
+    orders: [],
+  },
   hasError: false,
+  isConnected: false,
 };
 
 const feedSlice = createSlice({
@@ -16,27 +20,33 @@ const feedSlice = createSlice({
   initialState,
   reducers: {
     init: () => {},
+    closeFeedConnection: () => {},
     setData: (state, { payload }: PayloadAction<TFeedData>) => {
       const formattedData = {
         ...payload,
         orders: payload.orders.map(order => {
           const { createdAt } = order;
-          return { ...order, createdAt: formatDate(createdAt) };
+          return {
+            ...order,
+            ingredients: order.ingredients.filter(i => i),
+            createdAt: formatDate(createdAt),
+          };
         })
       };
 
       state.data = formattedData;
     },
     onConectionOpen: state => {
-      state.isLoading = false;
+      state.isConnected = true;
       state.hasError = false;
     },
     onConectionClose: state => {
       state.hasError = false;
+      state.isConnected = false;
     },
-    onConectionError: state => {
+    onError: state => {
       state.hasError = true;
-      state.isLoading = false;
+      state.isConnected = false;
     },
   },
 });
@@ -47,5 +57,6 @@ export const {
   setData: setFeedData,
   onConectionOpen: onFeedConectionOpen,
   onConectionClose: onFeedConectionClose,
-  onConectionError: onFeedConectionError,
+  onError: onFeedError,
+  closeFeedConnection,
 } = feedSlice.actions;

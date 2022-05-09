@@ -6,6 +6,7 @@ import { TApiResponse } from '../../../utils/types';
 
 type TSocketActions = {
   init: ActionCreatorWithoutPayload;
+  close: ActionCreatorWithoutPayload;
   onMessage: ActionCreatorWithPayload<any>;
   sendMessage?: ActionCreatorWithPayload<any>;
   onOpen?: ActionCreatorWithPayload<Event> | ActionCreatorWithoutPayload;
@@ -39,9 +40,19 @@ export function socketMiddleware<T> (
         return;
       }
 
-      const { init, sendMessage, onOpen, onClose, onError, onMessage } = socketActions;
+      const {
+        init,
+        close,
+        sendMessage,
+        onOpen,
+        onClose,
+        onError,
+        onMessage,
+      } = socketActions;
 
-      if (type === init.type && !socket) {
+      if (type === close.type && socket) socket.close();
+
+      if (type === init.type) {
         const socketUrl = new URL(url);
 
         if (isProtected && token) {
@@ -50,48 +61,49 @@ export function socketMiddleware<T> (
 
         if (!isProtected || (isProtected && token)) {
           socket = new WebSocket(socketUrl.href);
+
+          if (onOpen) {
+            socket.onopen = event => {
+              dispatch(onOpen(event));
+            };
+          }
+
+          if (onError) {
+            socket.onerror = event => {
+              dispatch(onError(event));
+            };
+          }
+
+          if (onClose) {
+            socket.onclose = event => {
+              dispatch(onClose(event));
+            };
+          }
+
+          socket.onmessage = event => {
+            const { data } = event;
+            const parsedData: T & TApiResponse = JSON.parse(data);
+            const { success, ...restParsedData } = parsedData;
+
+            if (success) {
+              dispatch(onMessage(restParsedData));
+            } else {
+              if (onError) dispatch(onError(event));
+            }
+          };
         }
       }
 
-      if (socket) {
-        if (onOpen) {
-          socket.onopen = event => {
-            dispatch(onOpen(event));
-          };
-        }
-
-        if (onError) {
-          socket.onerror = event => {
-            dispatch(onError(event));
-          };
-        }
-
-        if (onClose) {
-          socket.onclose = event => {
-            dispatch(onClose(event));
-          };
-        }
-
-        socket.onmessage = event => {
-          const { data } = event;
-          const parsedData: T & TApiResponse = JSON.parse(data);
-          const { success, ...restParsedData } = parsedData;
-
-          dispatch(onMessage(restParsedData));
+      if (socket && sendMessage && type === sendMessage.type) {
+        const message = {
+          ...payload
         };
 
-
-        if (sendMessage && type === sendMessage.type) {
-          const message = {
-            ...payload
-          };
-
-          if (isProtected) {
-            message.token = token;
-          }
-
-          socket.send(JSON.stringify(message))
+        if (isProtected) {
+          message.token = token;
         }
+
+        socket.send(JSON.stringify(message))
       }
 
       next(action);

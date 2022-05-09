@@ -16,7 +16,6 @@ import {
 import { signIn } from '../../services/store/slices/auth';
 import { useAppDispatch, useAppSelector } from '../../utils/hooks';
 import { TLocationState } from '../../utils/types';
-import { initUserOrders } from '../../services/store/slices/userOrders';
 
 export const LoginPage = () => {
   const { state } = useLocation<TLocationState>();
@@ -44,8 +43,6 @@ export const LoginPage = () => {
 
   if (user) {
     const from = state?.from.pathname;
-
-    dispatch(initUserOrders());
 
     return (
       <Redirect to={from && from !== '/logout' ? from : '/'} />

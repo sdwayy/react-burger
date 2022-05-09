@@ -71,8 +71,7 @@ export type TFeedData = {
 };
 
 export type TSocketState<T> = {
-  data: T | null;
-  isLoading: boolean;
+  data: T;
   hasError: boolean;
-  isInited?: boolean;
+  isConnected: boolean;
 };
