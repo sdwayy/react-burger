@@ -38,14 +38,15 @@ const OrderCard: React.FC<TOrderCardProps> = ({
   const ingredients = useAppSelector(state => state.ingredients.list);
 
   const orderIngredientsData = useMemo(
-    () => orderIngredientIds.map(id => ingredients.find(({ _id }) => _id === id)),
+    () => orderIngredientIds
+      .map(id => ingredients.find(({ _id }) => _id === id))
+      .filter(i => i),
     [orderIngredientIds, ingredients],
   ) as TIngredient[] ;
 
-  const price = useMemo(
-    () => calculateBurgerPrice(orderIngredientsData),
-    [orderIngredientsData],
-  );
+  if (!orderIngredientsData.length) return null;
+
+  const price = calculateBurgerPrice(orderIngredientsData);
 
   const withCounter = orderIngredientsData.length > MAX_INGREDIENTS_IN_CARD;
 
