@@ -58,7 +58,7 @@ const ModalSwitch = () => {
         <Route path="/reset-password">
           <ResetPasswordPage />
         </Route>
-        <ProtectedRoute path="/profile/orders/:id">
+        <ProtectedRoute path="/profile/orders/:number">
           <OrderPage />
         </ProtectedRoute>
         <ProtectedRoute path="/profile">
@@ -67,7 +67,7 @@ const ModalSwitch = () => {
         <Route path="/ingredients/:id">
           <IngredientPage />
         </Route>
-        <Route path="/feed/:id">
+        <Route path="/feed/:number">
           <OrderPage />
         </Route>
         <Route path="/feed">
@@ -99,7 +99,7 @@ const ModalSwitch = () => {
         (background?.pathname === '/feed' || background?.pathname === '/profile/orders')
         && (
           <Route
-            path={`${background.pathname}/:id`}
+            path={`${background.pathname}/:number`}
             children={
               <Modal closeModal={handleModalClose}>
                 <OrderDetails />

@@ -20,6 +20,7 @@ export const fetchOrder = createAsyncThunk<TOrderResponse, TInitialState>(
 
     if (bun) {
       ingredientIds.push(bun._id);
+      ingredientIds.push(bun._id);
     }
 
     const body = JSON.stringify({

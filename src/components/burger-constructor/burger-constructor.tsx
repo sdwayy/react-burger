@@ -66,10 +66,13 @@ const BurgerConstructor = () => {
   const burgerIngredients = useMemo(() =>  {
     const items = [...filling];
 
-    if (bun) items.push(bun);
+    if (bun) {
+      items.push(bun);
+      items.push(bun);
+    };
 
     return items;
-  },[bun, filling]);
+  }, [bun, filling]);
 
   const price = useMemo(() => calculateBurgerPrice(burgerIngredients), [burgerIngredients]);
 
@@ -164,10 +167,12 @@ const BurgerConstructor = () => {
         }
       </div>
       <footer className="pr-4 mt-10">
-        <p className={`${styles.sum} mr-10`}>
-          <span className="text text_type_digits-medium mr-2">{price}</span>
-          <CurrencyIcon type="primary" />
-        </p>
+        {price && (
+          <p className={`${styles.sum} mr-10`}>
+            <span className="text text_type_digits-medium mr-2">{price}</span>
+            <CurrencyIcon type="primary" />
+          </p>
+        )}
         <Button
           type="primary"
           size="large"

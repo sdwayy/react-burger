@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 
 import styles from './order-details.module.css';
 
@@ -9,39 +9,67 @@ import {
   CurrencyIcon,
 } from '@ya.praktikum/react-developer-burger-ui-components';
 import { calculateBurgerPrice } from '../../services/utils';
-import { TIngredient } from '../../utils/types';
+import { TFeedOrder, TIngredient } from '../../utils/types';
+import routes from '../../routes';
 
 type TMatchParams = {
-  id: string,
+  number: string,
 };
 
 const OrderDetails = () => {
-  const feedOrderMatcher = useRouteMatch<TMatchParams>('/feed/:id');
-  const userOrderMatcher = useRouteMatch<TMatchParams>('/profile/orders/:id');
-  const match = userOrderMatcher || feedOrderMatcher
+  const feedOrderMatcher = useRouteMatch<TMatchParams>('/feed/:number');
+  const userOrderMatcher = useRouteMatch<TMatchParams>('/profile/orders/:number');
+  const match = userOrderMatcher || feedOrderMatcher;
 
   const { list: ingredients } = useAppSelector(state => state.ingredients);
-  const { data: userOrders } = useAppSelector(state => state.userOrders)
+  const { data: userOrders } = useAppSelector(state => state.userOrders);
   const feedOrders = useAppSelector(state => state.feed.data?.orders);
-
   const orders = (feedOrderMatcher && feedOrders) || (userOrderMatcher && userOrders);
 
-  if (!match || !orders) return null;
+  const [order, setOrder] = useState<null | TFeedOrder>(null);
+  const [hasError, setHasError] = useState<boolean>(false);
 
-  const order = orders.find(({ _id }) => _id === match.params.id);
+  const number = match?.params?.number;
 
-  if (!order) return null;
+  useEffect(() => {
+    if (number) {
+      let currentOrder: TFeedOrder | null = null;
+
+      if (orders && orders.length) {
+        currentOrder = orders.find(order => order.number === +number) as TFeedOrder;
+      }
+
+      if (currentOrder) {
+        setOrder(currentOrder);
+      } else {
+        fetch(`${routes.orders}/${number}`)
+          .then(res => {
+            setHasError(false);
+            return res.json();
+          })
+          .then(({ orders }) => {
+            setOrder(orders[0]);
+          })
+          .catch(e => {
+            setHasError(true);
+          });
+      }
+    }
+  }, []);
+
+  if (!ingredients || !order) return null;
 
   const {
     createdAt,
     name,
     ingredients: ingredientsIds,
-    number,
     status,
   } = order;
 
   const formattedStatus = status === 'done' ? 'Выполнен' : 'В работе';
-  const ingredientsData = ingredientsIds.map(id => ingredients.find(({ _id }) => id === _id)) as TIngredient[];
+  const ingredientsData = ingredientsIds
+    .map(id => ingredients.find(({ _id }) => id === _id))
+    .filter(i => i) as TIngredient[];
 
   const price = calculateBurgerPrice(ingredientsData);
   const uniqIngredientsId = Array.from(new Set(ingredientsIds));
@@ -64,9 +92,7 @@ const OrderDetails = () => {
         {
           uniqIngredientsId.map((id, index) => {
             const ingredientData = ingredientsData.find(({ _id }) => id === _id);
-            let count = ingredientsData.filter(({ _id }) => id === _id).length;
-
-            if (ingredientData?.type === 'bun') count += 1;
+            const count = ingredientsData.filter(({ _id }) => id === _id).length;
 
             return (
               <div key={index} className={`${styles.ingredient} mb-4`}>

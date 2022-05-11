@@ -64,8 +64,7 @@ export const formatDate = (date: string | Date) => {
 export const calculateBurgerPrice = (ingredients: TIngredient[]) => {
   if (!Array.isArray(ingredients) || !ingredients.length) return;
 
-  return ingredients.reduce((acc, { price, type }) =>  {
-    if (type === 'bun') return acc += price * 2;
+  return ingredients.reduce((acc, { price }) =>  {
     return acc += price;
   }, 0);
 };

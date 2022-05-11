@@ -28,7 +28,6 @@ const OrderCard: React.FC<TOrderCardProps> = ({
   number,
   ingredients: orderIngredientIds = [],
   createdAt,
-  _id,
   status,
   withStatus,
 }) => {
@@ -54,7 +53,7 @@ const OrderCard: React.FC<TOrderCardProps> = ({
     <Link
       className={`${styles.container} p-6`}
       to={{
-        pathname: `${pathname}/${_id}`,
+        pathname: `${pathname}/${number}`,
         state: { background: location },
       }}
       data-with-counter={withCounter}
