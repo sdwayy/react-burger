@@ -6,5 +6,9 @@
   display: flex;
   justify-content: space-between;
   gap: 40px;
-  height: 100%;
+  max-height: 80vh;
+}
+
+.content-container > section {
+  flex-basis: 50%;
 }

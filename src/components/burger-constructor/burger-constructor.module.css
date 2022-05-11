@@ -1,13 +1,19 @@
 .container {
-  flex-basis: 50%;
-  max-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.ingredients {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  max-height: 80%;
 }
 
 .filling-list {
   position: relative;
   display: flex;
   flex-direction: column;
-  max-height: 45%;
   margin: 0;
   padding-left: 0;
   list-style: none;
@@ -24,7 +30,7 @@
 }
 
 .filling-list::-webkit-scrollbar-thumb {
-  background-color:  var(--scrollbar-thumb-color);
+  background-color: var(--scrollbar-thumb-color);
 }
 
 .filling-list li:last-of-type {

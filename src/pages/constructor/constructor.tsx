@@ -21,32 +21,30 @@ export const ConstructorPage = () => {
   const { hasError, isLoading, list } = ingredients;
 
   return (
-    <>
-      <main className={`${styles.main}`}>
-        {
-          !isLoading
-          && (
-            <h1 className="text text_type_main-large pt-10 pb-5">
-              { hasError ? text.errorTitle : text.appTitle}
-            </h1>
-          )
-        }
-        {
-          hasError
-            ? <p className="text text_type_main-medium">{text.errorMessage}</p>
-            : (
-              list.length > 0
-              && (
-                <div className={styles['content-container']}>
-                  <DndProvider backend={HTML5Backend}>
-                    <BurgerIngredients />
-                    <BurgerConstructor />
-                  </DndProvider>
-                </div>
-              )
+    <main className={styles.main}>
+      {
+        !isLoading
+        && (
+          <h1 className="text text_type_main-large pt-10 pb-5">
+            { hasError ? text.errorTitle : text.appTitle}
+          </h1>
+        )
+      }
+      {
+        hasError
+          ? <p className="text text_type_main-medium">{text.errorMessage}</p>
+          : (
+            list.length > 0
+            && (
+              <div className={styles['content-container']}>
+                <DndProvider backend={HTML5Backend}>
+                  <BurgerIngredients />
+                  <BurgerConstructor />
+                </DndProvider>
+              </div>
             )
-        }
-      </main>
-    </>
+          )
+      }
+    </main>
   );
 };

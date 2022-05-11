@@ -6,22 +6,27 @@ import {
 
 import routes from '../../../routes';
 import { deleteCookie, getCookie, setCookie } from '../../utils';
-import { TUserData } from '../../../utils/types';
+import { TApiResponse, TUserData } from '../../../utils/types';
 
 const setAccesTokenCookie = (accessToken: string) => {
   const TIMEOUT_IN_MINUTES = 20;
   const token = accessToken.split('Bearer ')[1];
   const expires = new Date(Date.now() + TIMEOUT_IN_MINUTES * 60 * 1000).toUTCString();
-  setCookie('accessToken', token, { expires, path: '/' });
+  setCookie('accessToken', token, { expires });
 };
 
 const setRefreshTokenCookie = (refreshToken: string) => {
   const TIMEOUT_IN_DAYS = 30;
   const expires = new Date(Date.now() + TIMEOUT_IN_DAYS * 24 * 60 * 60 * 1000).toUTCString();
-  setCookie('refreshToken', refreshToken, { expires, path: '/' });
+  setCookie('refreshToken', refreshToken, { expires });
 };
 
-export const updateTokens = async () => {
+type TTokenResponse = TApiResponse & {
+  accessToken: string;
+  refreshToken: string;
+};
+
+export const updateTokens = async (): Promise<TTokenResponse> => {
   const token = getCookie('refreshToken');
 
   if (!token) {
@@ -52,9 +57,13 @@ export const updateTokens = async () => {
   return json;
 };
 
-export const patchUser = createAsyncThunk(
+type TUserResponse = TTokenResponse & {
+  user: Omit<TUserData, 'password'>,
+};
+
+export const patchUser = createAsyncThunk<TUserResponse, Partial<TUserData>>(
   'auth/patchUser',
-  async (userData: Partial<TUserData>, { dispatch }) => {
+  async (userData, { dispatch }) => {
     const refreshToken = getCookie('refreshToken');
     const accessToken = getCookie('accessToken');
 
@@ -87,7 +96,7 @@ export const patchUser = createAsyncThunk(
   },
 );
 
-export const getUser = createAsyncThunk(
+export const getUser = createAsyncThunk<TUserResponse>(
   'auth/getUser',
   async (params, { dispatch }) => {
     const refreshToken = getCookie('refreshToken');
@@ -119,9 +128,11 @@ export const getUser = createAsyncThunk(
   },
 );
 
-export const register = createAsyncThunk(
+type TRegisterResponse = TUserResponse & TTokenResponse;
+
+export const register = createAsyncThunk<TRegisterResponse, TUserData>(
   'auth/register',
-  async (userData: TUserData) => {
+  async (userData) => {
     const data = {
       method: 'POST',
       headers: {
@@ -137,9 +148,11 @@ export const register = createAsyncThunk(
   },
 );
 
-export const signIn = createAsyncThunk(
+type TSignInResponse = TApiResponse & TTokenResponse & TUserResponse;
+
+export const signIn = createAsyncThunk<TSignInResponse, Omit<TUserData, 'name'>>(
   'auth/signIn',
-  async (userData: Omit<TUserData, 'name'>) => {
+  async (userData) => {
     const data = {
       method: 'POST',
       headers: {
@@ -155,7 +168,7 @@ export const signIn = createAsyncThunk(
   },
 );
 
-export const signOut = createAsyncThunk(
+export const signOut = createAsyncThunk<TApiResponse>(
   'auth/signOut',
   async () => {
     const data = {
@@ -220,7 +233,7 @@ const authSlice = createSlice({
           message,
         } = payload;
 
-        if (!success) {
+        if (!success && message) {
           state.errors.register = message;
           return;
         }
@@ -246,7 +259,7 @@ const authSlice = createSlice({
           message,
         } = payload;
 
-        if (!success) {
+        if (!success && message) {
           state.errors.signIn = message;
           return;
         }
@@ -266,7 +279,7 @@ const authSlice = createSlice({
       .addCase(getUser.fulfilled, (state, { payload }) => {
         const { success, user, message } = payload;
 
-        if (!success) {
+        if (!success && message) {
           state.errors.getUser = message;
           return
         }
@@ -280,7 +293,7 @@ const authSlice = createSlice({
       .addCase(patchUser.fulfilled, (state, { payload }) => {
         const { success, user, message } = payload;
 
-        if (!success) {
+        if (!success && message) {
           state.errors.patchUser = message;
           return
         }
@@ -294,7 +307,7 @@ const authSlice = createSlice({
       .addCase(signOut.fulfilled, (state, { payload }) => {
         const { success, message } = payload;
 
-        if (!success) {
+        if (!success && message) {
           state.errors.signOut = message;
           return
         }

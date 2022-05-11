@@ -1,0 +1,13 @@
+.main {
+  padding-left: 20px;
+}
+
+.content {
+  display: flex;
+  justify-content: space-between;
+  height: 100%;
+}
+
+.content section {
+  flex-basis: 47%;
+}

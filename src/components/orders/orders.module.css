@@ -1,0 +1,23 @@
+.orders {
+  max-height: 80vh;
+  max-width: 844px;
+  overflow-y: scroll;
+  overflow-x: hidden;
+}
+
+.orders::-webkit-scrollbar {
+  width: var(--scrollbar-width);
+}
+
+.orders::-webkit-scrollbar-track {
+  margin-bottom: var(--scrollbar-margin-bottom);
+  background-color: var(--scrollbar-track-color);
+}
+
+.orders::-webkit-scrollbar-thumb {
+  background-color: var(--scrollbar-thumb-color);
+}
+
+.orders a:not(:last-of-type) {
+  margin-bottom: 16px;
+}

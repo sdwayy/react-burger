@@ -2,23 +2,25 @@ import {
   createSlice,
   createAsyncThunk,
   AnyAction,
+  PayloadAction,
 } from '@reduxjs/toolkit';
 
-import { TIngredient } from '../../../utils/types';
+import { TIngredient, TOrderResponse } from '../../../utils/types';
 import routes from '../../../routes';
 import { getCookie } from '../../utils';
 
 const generateFillingItemKey = ({ _id }: TIngredient) => `${_id}-${+new Date()}`;
 
-export const fetchOrder = createAsyncThunk(
+export const fetchOrder = createAsyncThunk<TOrderResponse, TInitialState>(
   'currentOrder/fetchOrder',
-  async ({ filling, bun }: TInitialState) => {
+  async ({ filling, bun }) => {
     const ingredientIds = [
       ...filling.map(({ _id }) => _id),
     ];
 
     if (bun) {
-      ingredientIds.push(bun._id)
+      ingredientIds.push(bun._id);
+      ingredientIds.push(bun._id);
     }
 
     const body = JSON.stringify({
@@ -64,23 +66,35 @@ const currentOrderSlice = createSlice({
   name: 'currentOrder',
   initialState,
   reducers: {
-    addFilling: (state, { payload }) => {
+    addFilling: (
+      state,
+      { payload }: PayloadAction<TIngredient>,
+    ) => {
       const key = generateFillingItemKey(payload);
 
       state.filling.push({ ...payload, key });
     },
-    removeFilling: (state, { payload }) => {
+    removeFilling: (
+      state,
+      { payload }: PayloadAction<TIngredient>,
+    ) => {
       const { filling } = state;
       const { key } = payload;
 
       state.filling = filling.filter(item => item.key !== key);
     },
-    moveFilling: ({ filling }, { payload }) => {
+    moveFilling: (
+      { filling },
+      { payload }: PayloadAction<{ currentIndex: number, newIndex: number }>,
+    ) => {
       const { currentIndex, newIndex } = payload;
 
       filling.splice(newIndex, 0, filling.splice(currentIndex, 1)[0]);
     },
-    setBun: (state, { payload }) => {
+    setBun: (
+      state,
+      { payload }: PayloadAction<TIngredient>,
+    ) => {
       state.bun = payload;
     },
     toggleError: state => {

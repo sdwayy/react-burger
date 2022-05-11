@@ -1,5 +1,4 @@
 .container {
-  flex-basis: 50%;
   display: flex;
   flex-direction: column;
 }
@@ -34,7 +33,7 @@
 }
 
 .ingredients-list::-webkit-scrollbar-thumb {
-  background-color:  var(--scrollbar-thumb-color);
+  background-color: var(--scrollbar-thumb-color);
 }
 
 .ingredients-card-list {

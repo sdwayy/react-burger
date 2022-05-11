@@ -1,13 +1,8 @@
-import { createSlice, AnyAction } from '@reduxjs/toolkit';
+import { createSlice, AnyAction, PayloadAction } from '@reduxjs/toolkit';
+import { TOrder, TOrderResponse } from '../../../utils/types';
 import { fetchOrder } from './currentOrder';
 
-type TInitialState = {
-  number: null | number;
-};
-
-const initialState: TInitialState = {
-  number: null,
-};
+const initialState: Partial<TOrder> = {};
 
 const orderIsCreated = (action: AnyAction) => action.type === fetchOrder.fulfilled.type;
 
@@ -19,7 +14,10 @@ const createdOrderSlice = createSlice({
   },
   extraReducers: builder => {
     builder
-      .addMatcher(orderIsCreated, (state, { payload }) => payload.order);
+      .addMatcher(
+        orderIsCreated,
+        (state, { payload }: PayloadAction<TOrderResponse>) => payload.order
+      );
   },
 });
 

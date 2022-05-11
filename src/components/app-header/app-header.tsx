@@ -31,7 +31,7 @@ const Header = () => {
             className={`${styles['nav-item']} pt-5 pr-4 pb-5 pl-4`}
             title={text.orderFeed}
             Icon={ListIcon}
-            path="/orders"
+            path="/feed"
           />
         </nav>
         <Logo />
