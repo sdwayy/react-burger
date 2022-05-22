@@ -20,6 +20,15 @@ describe('Constructor page works correctly', () => {
       cy.get('[data-testid="modal"]').should('be.visible');
     });
 
+    it('Should shown ingredient data', () => {
+      cy.get('[data-testid="modal"] img').should('exist');
+      cy.get('[data-testid="modal"] [data-testid="ingredientName"]').should('exist');
+      cy.get('[data-testid="modal"]').contains('Калории');
+      cy.get('[data-testid="modal"]').contains('Белки');
+      cy.get('[data-testid="modal"]').contains('Жиры');
+      cy.get('[data-testid="modal"]').contains('Углеводы');
+    });
+
     it('Should close ingredient modal', () => {
       cy.get('[data-testid="modalCloseBtn"]').click();
       cy.get('[data-testid="modal"]').should('not.exist');
