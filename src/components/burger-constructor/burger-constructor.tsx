@@ -26,8 +26,8 @@ import {
   removeFilling,
   moveFilling,
   toggleError,
-} from '../../services/store/slices/currentOrder';
-import { resetCreatedOrder } from '../../services/store/slices/createdOrder';
+} from '../../services/store/slices/currentOrder/currentOrder';
+import { resetCreatedOrder } from '../../services/store/slices/createdOrder/createdOrder';
 import { TIngredient } from '../../utils/types';
 import { calculateBurgerPrice } from '../../services/utils';
 

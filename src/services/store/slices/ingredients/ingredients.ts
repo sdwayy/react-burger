@@ -4,8 +4,8 @@ import {
   AnyAction,
 } from '@reduxjs/toolkit';
 
-import routes from '../../../routes';
-import { TApiResponse, TIngredient } from '../../../utils/types';
+import routes from '../../../../routes';
+import { TApiResponse, TIngredient } from '../../../../utils/types';
 
 type TIngredientsResponse = TApiResponse & { data: TIngredient[] };
 
@@ -36,7 +36,7 @@ type TInitialState = {
   hasError: boolean;
 };
 
-const initialState: TInitialState = {
+export const initialState: TInitialState = {
   list: [],
   isLoading: false,
   hasError: false,

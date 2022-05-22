@@ -6,7 +6,7 @@ import {
   Button,
 } from '@ya.praktikum/react-developer-burger-ui-components';
 
-import { patchUser } from '../../services/store/slices/auth';
+import { patchUser } from '../../services/store/slices/auth/auth';
 import { TUserData } from '../../utils/types';
 import { useAppDispatch, useAppSelector } from '../../utils/hooks';
 

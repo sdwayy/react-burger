@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Redirect } from 'react-router-dom';
 
-import { signOut } from '../../services/store/slices/auth';
+import { signOut } from '../../services/store/slices/auth/auth';
 import { useAppDispatch } from '../../utils/hooks';
 
 export const LogoutPage = () => {

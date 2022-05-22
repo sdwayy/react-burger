@@ -7,7 +7,7 @@ import {
   PasswordInput,
   Button
 } from '@ya.praktikum/react-developer-burger-ui-components';
-import { register } from '../../services/store/slices/auth';
+import { register } from '../../services/store/slices/auth/auth';
 import { useAppDispatch, useAppSelector } from '../../utils/hooks';
 
 export const RegisterPage = () => {

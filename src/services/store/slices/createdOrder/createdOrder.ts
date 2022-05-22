@@ -1,8 +1,8 @@
 import { createSlice, AnyAction, PayloadAction } from '@reduxjs/toolkit';
-import { TOrder, TOrderResponse } from '../../../utils/types';
-import { fetchOrder } from './currentOrder';
+import { TOrder, TOrderResponse } from '../../../../utils/types';
+import { fetchOrder } from '../currentOrder/currentOrder';
 
-const initialState: Partial<TOrder> = {};
+export const initialState: Partial<TOrder> = {};
 
 const orderIsCreated = (action: AnyAction) => action.type === fetchOrder.fulfilled.type;
 

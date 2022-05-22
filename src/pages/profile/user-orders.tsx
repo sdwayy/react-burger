@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 
 import Orders from "../../components/orders/orders";
-import { closeUserOrdersConnection, initUserOrders } from "../../services/store/slices/userOrders";
+import { closeUserOrdersConnection, initUserOrders } from "../../services/store/slices/userOrders/userOrders";
 
 import { useAppDispatch, useAppSelector } from "../../utils/hooks";
 

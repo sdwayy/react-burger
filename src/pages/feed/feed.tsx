@@ -5,7 +5,7 @@ import OrdersStat from '../../components/orders-stat/orders-stat';
 import Orders from '../../components/orders/orders';
 
 import { useAppDispatch, useAppSelector } from '../../utils/hooks';
-import { closeFeedConnection, initFeed } from '../../services/store/slices/feed';
+import { closeFeedConnection, initFeed } from '../../services/store/slices/feed/feed';
 
 const text = {
   errorMessage: 'В приложении произошла ошибка. Пожалуйста, перезагрузите страницу',

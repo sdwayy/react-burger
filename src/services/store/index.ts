@@ -10,7 +10,7 @@ import {
   onFeedConectionOpen,
   onFeedError,
   closeFeedConnection,
-} from './slices/feed';
+} from './slices/feed/feed';
 import {
   initUserOrders,
   onUserOrdersConectionClose,
@@ -18,7 +18,7 @@ import {
   onUserOrdersConectionOpen,
   setUserOrdersData,
   closeUserOrdersConnection,
-} from './slices/userOrders';
+} from './slices/userOrders/userOrders';
 
 import { TFeedData } from '../../utils/types';
 
