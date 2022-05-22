@@ -32,7 +32,14 @@ const IngredientCardContent: React.FC<TIngredientCardContentProps> = ({
     <>
       {
         dragable
-        && <span className={`${styles['drag-icon']} mr-2`}><DragIcon type="primary" /></span>
+        && (
+          <span
+            className={`${styles['drag-icon']} mr-2`}
+            data-testid="orderItemDragIcon"
+          >
+            <DragIcon type="primary" />
+          </span>
+        )
       }
       <ConstructorElement { ...constructorElementProps }/>
     </>
