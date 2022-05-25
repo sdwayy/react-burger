@@ -1,11 +1,11 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
-import { TFeedData, TFeedOrder, TSocketState } from '../../../utils/types';
-import { formatDate } from '../../utils';
+import { TFeedData, TFeedOrder, TSocketState } from '../../../../utils/types';
+import { formatDate } from '../../../utils';
 
 type TInitialState = TSocketState<TFeedOrder[]>;
 
-const initialState: TInitialState = {
+export const initialState: TInitialState = {
   data: [],
   isConnected: true,
   hasError: false,

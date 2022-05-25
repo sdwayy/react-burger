@@ -46,10 +46,10 @@ const Modal: React.FC<TModalProps> = ({
 
   return createPortal((
     <>
-      <div className={`${styles.modal} pl-10 pr-10 pt-10 pb-15 ${className}`}>
+      <div className={`${styles.modal} pl-10 pr-10 pt-10 pb-15 ${className}`} data-testid="modal">
         <header>
           {title && <h1 className="text text_type_main-large pt-3 pb-3">{title}</h1>}
-          <button className={styles['close-btn']} type="button" onClick={closeModal}>
+          <button className={styles['close-btn']} type="button" onClick={closeModal} data-testid="modalCloseBtn">
             <CloseIcon type="primary" />
           </button>
         </header>

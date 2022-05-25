@@ -1,11 +1,11 @@
 import { combineReducers } from 'redux';
 
-import { createdOrder } from './createdOrder';
-import { currentOrder } from './currentOrder';
-import { ingredients } from './ingredients';
-import { auth } from './auth';
-import { userOrders } from './userOrders';
-import { feed } from './feed';
+import { createdOrder } from './createdOrder/createdOrder';
+import { currentOrder } from './currentOrder/currentOrder';
+import { ingredients } from './ingredients/ingredients';
+import { auth } from './auth/auth';
+import { userOrders } from './userOrders/userOrders';
+import { feed } from './feed/feed';
 
 export const rootReducer = combineReducers({
   createdOrder,

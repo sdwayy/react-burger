@@ -1,11 +1,11 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
-import { TFeedData, TSocketState } from '../../../utils/types';
-import { formatDate } from '../../utils';
+import { TFeedData, TSocketState } from '../../../../utils/types';
+import { formatDate } from '../../../utils';
 
 type TInitialState = TSocketState<TFeedData>;
 
-const initialState: TInitialState = {
+export const initialState: TInitialState = {
   data: {
     total: 0,
     totalToday: 0,

@@ -7,7 +7,7 @@ const text = {
   calories: 'Калории, ккал',
   proteins: 'Белки, г',
   fat: 'Жиры, г',
-  carbohydrates: 'Углводы, г',
+  carbohydrates: 'Углеводы, г',
 };
 
 type TMatchParams = {
@@ -46,7 +46,7 @@ const IngredientDetails = () => {
         width="480"
         height="240"
       />
-      <p className="text text_type_main-medium mb-9">
+      <p className="text text_type_main-medium mb-9" data-testid="ingredientName">
         {name}
       </p>
       <ul className={styles['nutritional-value']}>

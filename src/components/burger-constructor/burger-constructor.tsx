@@ -26,8 +26,8 @@ import {
   removeFilling,
   moveFilling,
   toggleError,
-} from '../../services/store/slices/currentOrder';
-import { resetCreatedOrder } from '../../services/store/slices/createdOrder';
+} from '../../services/store/slices/currentOrder/currentOrder';
+import { resetCreatedOrder } from '../../services/store/slices/createdOrder/createdOrder';
 import { TIngredient } from '../../utils/types';
 import { calculateBurgerPrice } from '../../services/utils';
 
@@ -122,12 +122,16 @@ const BurgerConstructor = () => {
   };
 
   return (
-    <section className={`${styles.container} pl-4`} ref={dropRef}>
+    <section className={`${styles.container} pl-4`} ref={dropRef} data-testid="constructor">
       <div className={styles.ingredients}>
         {
           bun
           && (
-            <div className={`${styles['order-item']} mb-4 pl-8 pr-4`}>
+            <div
+              className={`${styles['order-item']} mb-4 pl-8 pr-4`}
+              data-testid="orderItem"
+              data-type={bun.type}
+            >
               <IngredientCardContent
                 type="top"
                 isLocked={true}
@@ -154,7 +158,11 @@ const BurgerConstructor = () => {
         {
           bun
           && (
-            <div className={`${styles['order-item']} mt-4 pl-8 pr-4`}>
+            <div 
+              className={`${styles['order-item']} mt-4 pl-8 pr-4`} 
+              data-testid="orderItem"
+              data-type={bun.type}
+            >
               <IngredientCardContent
                 type="bottom"
                 isLocked={true}
@@ -168,7 +176,7 @@ const BurgerConstructor = () => {
       </div>
       <footer className="pr-4 mt-10">
         {price && (
-          <p className={`${styles.sum} mr-10`}>
+          <p className={`${styles.sum} mr-10`} data-testid="orderPrice">
             <span className="text text_type_digits-medium mr-2">{price}</span>
             <CurrencyIcon type="primary" />
           </p>
@@ -179,7 +187,9 @@ const BurgerConstructor = () => {
           disabled={price === 0 || !bun || isLoading}
           onClick={onCreateOrderBtnClick}
         >
-          {isLoading ? text.createInProgress : text.createOrder}
+          <span data-testid="createOrderBtn">
+            {isLoading ? text.createInProgress : text.createOrder}
+          </span>
         </Button>
       </footer>
       {

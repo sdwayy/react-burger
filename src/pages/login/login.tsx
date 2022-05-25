@@ -13,7 +13,7 @@ import {
   Button,
 } from '@ya.praktikum/react-developer-burger-ui-components';
 
-import { signIn } from '../../services/store/slices/auth';
+import { signIn } from '../../services/store/slices/auth/auth';
 import { useAppDispatch, useAppSelector } from '../../utils/hooks';
 import { TLocationState } from '../../utils/types';
 

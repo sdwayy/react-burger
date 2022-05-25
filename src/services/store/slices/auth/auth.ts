@@ -4,9 +4,9 @@ import {
   AnyAction,
 } from '@reduxjs/toolkit';
 
-import routes from '../../../routes';
-import { deleteCookie, getCookie, setCookie } from '../../utils';
-import { TApiResponse, TUserData } from '../../../utils/types';
+import routes from '../../../../routes';
+import { deleteCookie, getCookie, setCookie } from '../../../utils';
+import { TApiResponse, TUserData } from '../../../../utils/types';
 
 const setAccesTokenCookie = (accessToken: string) => {
   const TIMEOUT_IN_MINUTES = 20;
@@ -203,7 +203,7 @@ type TInitialState = {
   },
 }
 
-const initialState: TInitialState = {
+export const initialState: TInitialState = {
   user: null,
   isUserLoaded: false,
   errors: {

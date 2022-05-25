@@ -5,9 +5,9 @@ import {
   PayloadAction,
 } from '@reduxjs/toolkit';
 
-import { TIngredient, TOrderResponse } from '../../../utils/types';
-import routes from '../../../routes';
-import { getCookie } from '../../utils';
+import { TIngredient, TOrderResponse } from '../../../../utils/types';
+import routes from '../../../../routes';
+import { getCookie } from '../../../utils';
 
 const generateFillingItemKey = ({ _id }: TIngredient) => `${_id}-${+new Date()}`;
 
@@ -55,7 +55,7 @@ type TInitialState = {
   hasError: boolean;
 };
 
-const initialState: TInitialState = {
+export const initialState: TInitialState = {
   bun: null,
   filling: [],
   isLoading: false,

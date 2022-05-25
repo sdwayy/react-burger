@@ -23,6 +23,7 @@ const BurgerFillingCard: React.FC<TBurgerFillingCardProps> = ({ data, index, han
     price,
     image_mobile,
     key,
+    type,
   } = data;
 
   const ref = useRef<HTMLLIElement>(null);
@@ -80,6 +81,8 @@ const BurgerFillingCard: React.FC<TBurgerFillingCardProps> = ({ data, index, han
       className={`${styles['order-item']} mb-4`}
       ref={ref}
       style={{opacity: isDragging ? 0 : 1}}
+      data-testid="orderItem"
+      data-type={type}
     >
       <IngredientCardContent
         text={name}
